@@ -15,71 +15,56 @@
       background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.07); color:#333;
       padding:8px 12px; border-radius:12px; font-size:12px; letter-spacing:.2px; z-index:10;
       transition: opacity 0.3s ease;}
+
     .skill-button {
       position: fixed;
       transform: translate(-50%, -50%);
-      background: #111;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 30px;
-      font-family: 'Outfit', sans-serif;
-      font-weight: 500;
-      font-size: 16px;
-      cursor: pointer;
-      opacity: 0;
-      pointer-events: none;
-      z-index: 2;
+      background: #111; color: white; border: none;
+      padding: 12px 24px; border-radius: 30px;
+      font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 16px;
+      cursor: pointer; opacity: 0; pointer-events: none; z-index: 2;
       transition: all 0.6s cubic-bezier(0.2, 0.8, 0.3, 1.1);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      scale: 0.5;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1); scale: 0.5;
     }
-    .skill-button.visible {
-      opacity: 1;
-      pointer-events: auto;
-      scale: 1;
-    }
-    .nav {
+    .skill-button.visible { opacity: 1; pointer-events: auto; scale: 1; }
+
+    .nav { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10; }
+    .links { display: flex; gap: 12px; }
+    .pill { padding: 8px 16px; background: rgba(255,255,255,0.9);
+      border:1px solid rgba(0,0,0,0.1); border-radius:20px; text-decoration:none;
+      color:#333; font-size:14px; transition: all 0.2s ease; }
+    .pill:hover { background: rgba(0,0,0,0.05); }
+    .pill.active { background: #111; color: white; }
+
+    footer { position: fixed; bottom: 20px; right: 20px; font-size: 12px; color: rgba(0,0,0,0.6); z-index: 10; }
+
+    /* Phrase lines (bigger + farther) */
+    .phrase-line{
       position: fixed;
-      top: 20px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 10;
+      font-weight: 900;
+      font-size: clamp(36px, 5vw, 84px); /* bigger */
+      letter-spacing: .4px; color: #111;
+      z-index: 5; opacity: 0; transition: opacity .35s ease;
+      pointer-events: none; white-space: nowrap; mix-blend-mode: normal;
     }
-    .links {
-      display: flex;
-      gap: 12px;
+    .phrase-line.visible{ opacity: 1; }
+    .phrase-line .segment{
+      display: inline-block; opacity: 0; transform: translateY(10px);
+      transition: opacity .5s ease, transform .5s cubic-bezier(.2,.8,.2,1);
+      margin: 0 .32em;
     }
-    .pill {
-      padding: 8px 16px;
-      background: rgba(255,255,255,0.9);
-      border: 1px solid rgba(0,0,0,0.1);
-      border-radius: 20px;
-      text-decoration: none;
-      color: #333;
-      font-size: 14px;
-      transition: all 0.2s ease;
-    }
-    .pill:hover {
-      background: rgba(0,0,0,0.05);
-    }
-    .pill.active {
-      background: #111;
-      color: white;
-    }
-    footer {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      font-size: 12px;
-      color: rgba(0,0,0,0.6);
-      z-index: 10;
-    }
+    .phrase-line .segment.revealed{ opacity: 1; transform: translateY(0); }
   </style>
 </head>
 <body>
   <canvas id="stage" aria-label="Interactive cube particle field"></canvas>
   <div class="hint" id="hint">Move your cursor to the center to transform the cube • Tap center on mobile</div>
+
+  <!-- phrase containers (filled by JS) -->
+  <div id="phraseTop" class="phrase-line" aria-hidden="true"></div>
+  <div id="phraseBottom" class="phrase-line" aria-hidden="true"></div>
 
   <header>
     <nav class="nav">
@@ -99,98 +84,140 @@
   const cvs = document.getElementById('stage');
   const ctx = cvs.getContext('2d');
   const hint = document.getElementById('hint');
+  const phraseTop = document.getElementById('phraseTop');
+  const phraseBottom = document.getElementById('phraseBottom');
   const DPR = Math.min(devicePixelRatio || 1, 2);
 
   let W=0, H=0, last=performance.now();
-  let GRID = 105;
-  let SIZE = 0;
-  let CX=0, CY=0;
-  let CELL=0;
+  let GRID = 105, SIZE = 0, CX=0, CY=0, CELL=0;
+
+  // State machine: 'idle' -> 'phrase' -> 'dismember' -> 'done'
+  let phase = 'idle';
   let transformTriggered = false;
   let transformProgress = 0;
   let transformComplete = false;
   let distortionAmount = 0;
 
   const buttonLabels = [
-    'Data Science', 'Machine Learning', 'Data Engineering',
-    'Automations', 'AI Engineering', 'AI Art'
+    'Data Science','Machine Learning','Data Engineering',
+    'Automations','AI Engineering','AI Art'
   ];
   let buttons = [];
-
   const particles = [];
-  // Track velocity to bias swirl direction/intensity
+
   const mouse = {x:0, y:0, active:false, vx:0, vy:0, px:0, py:0};
 
-  function createButtons() {
-    // Remove existing buttons
+  // ----- Phrase helpers -----
+  const phraseTimeouts = [];
+  const topSegments = ['How much','can do'];
+  const bottomSegments = ['data engineer','in 2025?'];
+
+  function clearPhraseTimers(){ while (phraseTimeouts.length) clearTimeout(phraseTimeouts.pop()); }
+  function buildPhrase(){
+    phraseTop.innerHTML = topSegments.map(t => `<span class="segment">${t}</span>`).join(' ');
+    phraseBottom.innerHTML = bottomSegments.map(t => `<span class="segment">${t}</span>`).join(' ');
+  }
+  function positionPhrase(){
+    const cxCSS = CX / DPR;
+
+    // Farther from cube edges (scaled + mins)
+    const offsetTop    = Math.max(140, SIZE * 0.32) / DPR;
+    const offsetBottom = Math.max(160, SIZE * 0.36) / DPR;
+
+    let topY = (CY - SIZE/2) / DPR - offsetTop;
+    let bottomY = (CY + SIZE/2) / DPR + offsetBottom;
+
+    // Safety to keep on screen
+    topY = Math.max(12, topY);
+    bottomY = Math.min((H / DPR) - 24, bottomY);
+
+    phraseTop.style.top = `${topY}px`;
+    phraseBottom.style.top = `${bottomY}px`;
+    phraseTop.style.left = phraseBottom.style.left = `${cxCSS}px`;
+  }
+  function showPhrase(){
+    phraseTop.classList.add('visible');
+    phraseBottom.classList.add('visible');
+  }
+  function hidePhrase(){
+    phraseTop.classList.remove('visible');
+    phraseBottom.classList.remove('visible');
+    phraseTop.querySelectorAll('.segment').forEach(s => s.classList.remove('revealed'));
+    phraseBottom.querySelectorAll('.segment').forEach(s => s.classList.remove('revealed'));
+  }
+  function startPhraseSequence(){
+    if (phase !== 'idle') return;
+    phase = 'phrase';
+    hint.style.opacity = '0';
+    buildPhrase();
+    positionPhrase();
+    showPhrase();
+
+    // Reveal 1/4 every 0.75s
+    const schedule = [
+      { t: 0,     line: 'top',    idx: 0 },
+      { t: 750,   line: 'top',    idx: 1 },
+      { t: 1500,  line: 'bottom', idx: 0 },
+      { t: 2250,  line: 'bottom', idx: 1 },
+    ];
+    schedule.forEach(item => {
+      phraseTimeouts.push(setTimeout(() => {
+        const lineEl = item.line === 'top' ? phraseTop : phraseBottom;
+        const seg = lineEl.querySelectorAll('.segment')[item.idx];
+        if (seg) seg.classList.add('revealed');
+      }, item.t));
+    });
+
+    // After last reveal at 2250ms, wait +750ms => 3000ms total, then dismember
+    phraseTimeouts.push(setTimeout(() => {
+      hidePhrase();         // fade out text
+      triggerTransform();   // start particle → buttons
+      phase = 'dismember';
+    }, 3000));
+  }
+
+  // ----- Buttons -----
+  function createButtons(){
     buttons.forEach(btn => btn.element && btn.element.remove());
     buttons = [];
-    
     const angleStep = (Math.PI * 2) / buttonLabels.length;
     const radius = Math.min(W, H) * 0.25;
-    
     buttonLabels.forEach((label, i) => {
       const btn = document.createElement('button');
-      btn.className = 'skill-button';
-      btn.textContent = label;
+      btn.className = 'skill-button'; btn.textContent = label;
       document.body.appendChild(btn);
-      
       const angle = i * angleStep - Math.PI/2;
       const x = CX + Math.cos(angle) * radius;
       const y = CY + Math.sin(angle) * radius;
-      
       btn.style.left = (x/DPR) + 'px';
-      btn.style.top = (y/DPR) + 'px';
-      
-      buttons.push({
-        element: btn,
-        x: x,
-        y: y,
-        angle: angle,
-        radius: radius
-      });
+      btn.style.top  = (y/DPR) + 'px';
+      buttons.push({ element: btn, x, y, angle, radius });
     });
   }
 
   function fit(){
     W = cvs.width  = Math.floor(innerWidth * DPR);
     H = cvs.height = Math.floor(innerHeight * DPR);
-    cvs.style.width = innerWidth+'px';
-    cvs.style.height= innerHeight+'px';
+    cvs.style.width = innerWidth+'px'; cvs.style.height = innerHeight+'px';
 
-    const S = Math.floor(Math.min(W,H) * 0.34);
-    SIZE = S; 
-    CX = Math.floor(W*0.5); 
-    CY = Math.floor(H*0.5);
+    SIZE = Math.floor(Math.min(W,H) * 0.34);
+    CX = Math.floor(W*0.5); CY = Math.floor(H*0.5);
 
-    GRID = Math.max(60, Math.min(150, Math.round(S/6)));
-    CELL = S / GRID;
-    
-    if (!transformTriggered) {
-      createButtons();
-    }
+    GRID = Math.max(60, Math.min(150, Math.round(SIZE/6)));
+    CELL = SIZE / GRID;
 
-    // Rebuild particles only if transform hasn't been triggered
-    if (!transformTriggered) {
+    createButtons();
+    positionPhrase();
+
+    if (phase === 'idle') {
       particles.length = 0;
-      const startX = CX - S/2 + CELL/2;
-      const startY = CY - S/2 + CELL/2;
+      const startX = CX - SIZE/2 + CELL/2;
+      const startY = CY - SIZE/2 + CELL/2;
       for(let gy=0; gy<GRID; gy++){
         for(let gx=0; gx<GRID; gx++){
-          const hx = startX + gx*CELL;
-          const hy = startY + gy*CELL;
-          particles.push({ 
-            x: hx, 
-            y: hy, 
-            vx: 0, 
-            vy: 0, 
-            homeX: hx, 
-            homeY: hy, 
-            mass: 0.8 + Math.random()*0.6,
-            targetButton: null,
-            flying: false,
-            disappeared: false
-          });
+          const hx = startX + gx*CELL, hy = startY + gy*CELL;
+          particles.push({ x:hx, y:hy, vx:0, vy:0, homeX:hx, homeY:hy,
+            mass:0.8+Math.random()*0.6, targetButton:null, flying:false, disappeared:false });
         }
       }
     }
@@ -198,45 +225,31 @@
 
   function onMove(e){
     if (transformComplete) return;
-    
     const cx = (e.touches? e.touches[0].clientX : e.clientX) * DPR;
     const cy = (e.touches? e.touches[0].clientY : e.clientY) * DPR;
-
-    // smoothed velocity for direction-aware swirl
     mouse.vx = (cx - mouse.px) * 0.6 + mouse.vx * 0.4;
     mouse.vy = (cy - mouse.py) * 0.6 + mouse.vy * 0.4;
-    mouse.px = cx; 
-    mouse.py = cy;
-
-    mouse.x = cx; 
-    mouse.y = cy; 
-    mouse.active = true;
+    mouse.px = cx; mouse.py = cy; mouse.x = cx; mouse.y = cy; mouse.active = true;
   }
 
-  function triggerTransform() {
+  function triggerTransform(){
+    if (transformTriggered) return;
     transformTriggered = true;
-    hint.style.opacity = '0';
-    
-    // Show buttons immediately
+
+    // show buttons
     buttons.forEach((btn, i) => {
-      setTimeout(() => {
-        btn.element.classList.add('visible');
-      }, i * 100);
+      setTimeout(() => btn.element.classList.add('visible'), i * 100);
     });
 
-    // Assign each particle to a button and start flying
-    particles.forEach((p, i) => {
+    // particles fly to buttons
+    particles.forEach(p => {
       const buttonIndex = Math.floor(Math.random() * buttons.length);
       p.targetButton = buttons[buttonIndex];
       p.flying = true;
-      
-      // Add some initial velocity towards the target
-      const dx = p.targetButton.x - p.x;
-      const dy = p.targetButton.y - p.y;
+      const dx = p.targetButton.x - p.x, dy = p.targetButton.y - p.y;
       const dist = Math.hypot(dx, dy) || 1;
       const speed = 2 + Math.random() * 3;
-      p.vx = (dx / dist) * speed;
-      p.vy = (dy / dist) * speed;
+      p.vx = (dx / dist) * speed; p.vy = (dy / dist) * speed;
     });
   }
 
@@ -244,7 +257,7 @@
   addEventListener('touchstart', onMove, {passive:true});
   addEventListener('resize', fit);
 
-  // Helper: distance from point to the cube rect (0 if inside)
+  // Distance from point to cube rect (0 if inside)
   function distToCube(px, py){
     const dx = Math.max(Math.abs(px - CX) - SIZE/2, 0);
     const dy = Math.max(Math.abs(py - CY) - SIZE/2, 0);
@@ -252,178 +265,108 @@
   }
 
   function step(dt){
-    // Update distortion based on proximity to cube & mouse speed (only if not transformed)
-    if (!transformTriggered) {
+    if (!transformTriggered && phase === 'idle') {
       if (mouse.active) {
         const d = distToCube(mouse.x, mouse.y);
-        const limit = SIZE * 0.50; // influence range outside the cube
-        const prox = Math.max(0, 1 - d / limit); // 1 inside / near, 0 far
+        const limit = SIZE * 0.50;
+        const prox = Math.max(0, 1 - d / limit);
         const speed = Math.hypot(mouse.vx, mouse.vy);
-        const speedBoost = Math.min(1, speed / (28 * DPR)); // extra swirl when gliding
+        const speedBoost = Math.min(1, speed / (28 * DPR));
         const target = Math.max(0, Math.min(1, prox * 0.9 + speedBoost * 0.35));
-        distortionAmount += (target - distortionAmount) * 0.15; // smooth lerp
+        distortionAmount += (target - distortionAmount) * 0.15;
       } else {
         distortionAmount *= 0.92;
       }
     }
 
     if (!transformTriggered) {
-      // Check if cursor is within 40px of cube center for transformation
-      if (mouse.active) {
+      if (mouse.active && phase === 'idle') {
         const dToCenter = Math.hypot(mouse.x - CX, mouse.y - CY);
-        if (dToCenter <= 40 * DPR) {
-          triggerTransform();
-        }
+        if (dToCenter <= 40 * DPR) startPhraseSequence();
       }
       return;
     }
 
     transformProgress = Math.min(1, transformProgress + dt * 0.008);
 
-    for(let i = particles.length - 1; i >= 0; i--) {
+    for (let i=particles.length-1; i>=0; i--){
       const p = particles[i];
       if (p.disappeared) continue;
 
-      if (p.flying && p.targetButton) {
-        // Fly towards the assigned button
-        const dx = p.targetButton.x - p.x;
-        const dy = p.targetButton.y - p.y;
+      if (p.flying && p.targetButton){
+        const dx = p.targetButton.x - p.x, dy = p.targetButton.y - p.y;
         const dist = Math.hypot(dx, dy) || 1;
-        
-        if (dist < 15 * DPR) {
-          // Close enough to button - disappear
-          p.disappeared = true;
-          continue;
-        }
+        if (dist < 15 * DPR){ p.disappeared = true; continue; }
 
-        // Accelerate towards target
         const force = 0.08;
-        p.vx += (dx / dist) * force;
-        p.vy += (dy / dist) * force;
-        
-        // Add some randomness for organic movement
-        p.vx += (Math.random() - 0.5) * 0.5;
-        p.vy += (Math.random() - 0.5) * 0.5;
-        
-        // Apply velocity with some damping
-        p.vx *= 0.98;
-        p.vy *= 0.98;
-        p.x += p.vx * (dt * 0.1);
-        p.y += p.vy * (dt * 0.1);
+        p.vx += (dx / dist) * force; p.vy += (dy / dist) * force;
+        p.vx += (Math.random()-0.5)*0.5; p.vy += (Math.random()-0.5)*0.5;
+        p.vx *= 0.98; p.vy *= 0.98;
+        p.x += p.vx * (dt * 0.1); p.y += p.vy * (dt * 0.1);
       }
     }
 
-    // Check if all particles have disappeared
-    const remainingParticles = particles.filter(p => !p.disappeared);
-    if (remainingParticles.length === 0 && !transformComplete) {
-      transformComplete = true;
+    const remaining = particles.filter(p => !p.disappeared);
+    if (remaining.length === 0 && !transformComplete){
+      transformComplete = true; phase = 'done'; clearPhraseTimers();
     }
   }
 
   function draw(){
     ctx.clearRect(0,0,W,H);
-
     if (transformComplete) return;
 
-    if (!transformTriggered) {
-      // Draw solid cube with strong fish-eye + swirl distortion and guaranteed hole at cursor
+    if (!transformTriggered){
       ctx.save();
-      ctx.fillStyle = '#111111';
-      
-      if (distortionAmount > 0 && mouse.active) {
-        const gridRes = 32; // finer sampling => smoother effect
-        const cellW = SIZE / gridRes;
-        const cellH = SIZE / gridRes;
-        const startX = CX - SIZE/2 + cellW/2;
-        const startY = CY - SIZE/2 + cellH/2;
-
-        const maxEffect = SIZE * 0.80;                           // radius of influence
-        const baseHole  = Math.max(12 * DPR, SIZE * 0.12);       // minimum white hole
+      ctx.fillStyle = '#111';
+      // fish-eye + swirl (unchanged)
+      const active = distortionAmount > 0 && mouse.active;
+      if (active){
+        const gridRes = 32;
+        const cellW = SIZE / gridRes, cellH = SIZE / gridRes;
+        const startX = CX - SIZE/2 + cellW/2, startY = CY - SIZE/2 + cellH/2;
+        const maxEffect = SIZE * 0.80;
+        const baseHole  = Math.max(12 * DPR, SIZE * 0.12);
         const hole      = baseHole + distortionAmount * SIZE * 0.10;
 
-        for (let gy = 0; gy < gridRes; gy++) {
-          for (let gx = 0; gx < gridRes; gx++) {
-            const ox = startX + gx * cellW;
-            const oy = startY + gy * cellH;
-
-            const dx = ox - mouse.x;
-            const dy = oy - mouse.y;
+        for (let gy=0; gy<gridRes; gy++){
+          for (let gx=0; gx<gridRes; gx++){
+            const ox = startX + gx*cellW, oy = startY + gy*cellH;
+            const dx = ox - mouse.x, dy = oy - mouse.y;
             const dist = Math.hypot(dx, dy) + 1e-4;
-
-            // outside influence => draw normally
-            if (dist > maxEffect) {
-              ctx.fillRect(ox - cellW/2, oy - cellH/2, cellW, cellH);
-              continue;
-            }
-
-            // t: 0 at cursor, 1 at edge
-            const t = dist / maxEffect;
-            const focus = 1 - t; // 1 near the cursor
-
-            // Swirl angle (stronger near cursor). Direction uses 2D cross with mouse velocity.
-            const baseTheta = focus * focus * (0.95 * Math.max(0.35, distortionAmount)); // up to ~0.95 rad
-            const cross = mouse.vx * dy - mouse.vy * dx; // sign of rotation
-            const sign = cross >= 0 ? 1 : -1;
-            const theta = baseTheta * sign;
-
-            const cos = Math.cos(theta);
-            const sin = Math.sin(theta);
-
-            // rotate around cursor (swirl)
-            let rx = cos * dx - sin * dy;
-            let ry = sin * dx + cos * dy;
-
-            // fisheye magnification (pushes outwards, creating a gap)
-            const radialGain = 1 + focus * focus * (1.05 + 1.25 * distortionAmount); // >1 near center
-            rx *= radialGain;
-            ry *= radialGain;
-
-            const nx = mouse.x + rx;
-            const ny = mouse.y + ry;
-
-            // guaranteed white space around cursor
-            if (Math.hypot(nx - mouse.x, ny - mouse.y) < hole) continue;
-
-            // shrink cells near cursor => ring of orbiting "particles"
-            const scale = Math.max(0.25, Math.min(1, 1 - focus * (0.75 + 0.5 * distortionAmount)));
-
-            ctx.save();
-            ctx.translate(nx, ny);
-            ctx.scale(scale, scale);
-            ctx.fillRect(-cellW/2, -cellH/2, cellW, cellH);
-            ctx.restore();
+            if (dist > maxEffect){ ctx.fillRect(ox - cellW/2, oy - cellH/2, cellW, cellH); continue; }
+            const t = dist / maxEffect, focus = 1 - t;
+            const baseTheta = focus*focus*(0.95*Math.max(0.35,distortionAmount));
+            const cross = mouse.vx*dy - mouse.vy*dx;
+            const theta = baseTheta * (cross>=0 ? 1 : -1);
+            const cos = Math.cos(theta), sin = Math.sin(theta);
+            let rx = cos*dx - sin*dy, ry = sin*dx + cos*dy;
+            const radialGain = 1 + focus*focus*(1.05 + 1.25*distortionAmount);
+            rx *= radialGain; ry *= radialGain;
+            const nx = mouse.x + rx, ny = mouse.y + ry;
+            if (Math.hypot(nx-mouse.x, ny-mouse.y) < hole) continue;
+            const scale = Math.max(0.25, Math.min(1, 1 - focus*(0.75 + 0.5*distortionAmount)));
+            ctx.save(); ctx.translate(nx, ny); ctx.scale(scale, scale);
+            ctx.fillRect(-cellW/2, -cellH/2, cellW, cellH); ctx.restore();
           }
         }
       } else {
-        // Normal solid cube
         ctx.fillRect(CX - SIZE/2, CY - SIZE/2, SIZE, SIZE);
       }
-      
       ctx.restore();
     } else {
-      // Draw individual particles during transformation
-      ctx.fillStyle = '#111111';
-      
-      for(const p of particles) {
+      ctx.fillStyle = '#111';
+      for (const p of particles){
         if (p.disappeared) continue;
-        
         let opacity = 1;
-        if (p.flying && p.targetButton) {
-          // Fade out as particle approaches button
-          const dx = p.targetButton.x - p.x;
-          const dy = p.targetButton.y - p.y;
+        if (p.flying && p.targetButton){
+          const dx = p.targetButton.x - p.x, dy = p.targetButton.y - p.y;
           const dist = Math.hypot(dx, dy);
           opacity = Math.max(0, Math.min(1, dist / (30 * DPR)));
         }
-        
-        if (opacity > 0) {
-          ctx.save();
-          ctx.globalAlpha = opacity;
-          const particleSize = CELL * 0.8;
-          const x = Math.round(p.x - particleSize/2);
-          const y = Math.round(p.y - particleSize/2);
-          const size = Math.ceil(particleSize);
-          ctx.fillRect(x, y, size, size);
+        if (opacity > 0){
+          ctx.save(); ctx.globalAlpha = opacity;
+          const s = CELL * 0.8; ctx.fillRect(Math.round(p.x - s/2), Math.round(p.y - s/2), Math.ceil(s), Math.ceil(s));
           ctx.restore();
         }
       }
@@ -431,15 +374,10 @@
   }
 
   function frame(now){
-    const dt = Math.min(60, now - last); 
-    last = now;
-    step(dt); 
-    draw(); 
-    requestAnimationFrame(frame);
+    const dt = Math.min(60, now - last); last = now; step(dt); draw(); requestAnimationFrame(frame);
   }
 
-  fit(); 
-  requestAnimationFrame(frame);
+  fit(); buildPhrase(); positionPhrase(); requestAnimationFrame(frame);
 })();
   </script>
 </body>

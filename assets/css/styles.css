@@ -94,3 +94,47 @@ footer{
   font-size:12px;
   color:rgba(0,0,0,0.6);
 }
+/* was: clamp(22px, 3.4vw, 44px) */
+.phrase-line{
+  font-size: clamp(32px, 4.8vw, 72px);
+}
+
+/* Invisible logo wrapper */
+.logo-reveal{
+  width: min(880px, 92vw);
+  height: clamp(100px, 16vw, 180px);
+  margin: 32px auto 8px;
+  display: grid;
+  place-items: center;
+  pointer-events: none; /* don't block links or hover states below */
+}
+
+#stayreal-logo{
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* optional: spacing tweaks so the name sits a bit tighter below the logo */
+main h1{
+  margin-top: 8px;
+}
+/* Fullscreen canvas behind everything */
+.bg-stars{
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+  z-index: 0;          /* keep it behind */
+  pointer-events: none;
+}
+
+/* Ensure content sits above */
+header, main, footer{
+  position: relative;
+  z-index: 1;
+}
+
+
+

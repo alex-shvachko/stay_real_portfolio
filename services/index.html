@@ -12,23 +12,98 @@
 </head>
 <body>
   <header>
-    <nav class="nav">
-      <div class="links">
+    <nav class="nav" style="display: flex; justify-content: center; width: 100%;">
+      <div class="links" style="justify-content: center;">
         <a class="pill" href="../">Home</a>
         <a class="pill" href="../projects/">Projects</a>
         <a class="pill active" href="../services/">Services</a>
       </div>
     </nav>
   </header>
-  <main class="gallery">
-    <button class="service-btn">
-      <img src="https://images.unsplash.com/photo-1522199710521-72d69614c702?auto=format&fit=crop&w=600&h=1067&q=80" alt="Digital marketing">
-      <span>Digital marketing</span>
-    </button>
-    <button class="service-btn">
-      <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&h=1067&q=80" alt="Personalized automations">
-      <span>Personalized automations</span>
-    </button>
+  <style>
+    .services-scroll-container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      overflow: hidden;
+      padding: 40px 20px;
+      position: relative;
+    }
+    .services-container {
+      display: flex;
+      gap: 30px;
+      width: max-content;
+      margin: 0 auto;
+      padding: 20px;
+      box-sizing: border-box;
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+    .services-container::-webkit-scrollbar {
+      display: none;  /* Chrome, Safari and Opera */
+    }
+    .service-btn {
+      flex: 0 0 300px;
+      height: 400px;
+      position: relative;
+      border: none;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #f5f5f5;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .service-btn:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .service-btn img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .service-btn:hover img {
+      transform: scale(1.05);
+    }
+    .service-btn span {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.7);
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 18px;
+    }
+    /* Hide scrollbar but keep functionality */
+    .services-scroll-container {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .services-scroll-container::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+  <main style="min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    <div class="services-scroll-container">
+      <div class="services-container">
+        <button class="service-btn">
+          <img src="https://images.unsplash.com/photo-1522199710521-72d69614c702?auto=format&fit=crop&w=600&h=800&q=80" alt="Digital marketing">
+          <span>Digital marketing</span>
+        </button>
+        <button class="service-btn">
+          <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&h=800&q=80" alt="Personalized automations">
+          <span>Personalized automations</span>
+        </button>
+        <button class="service-btn">
+          <img src="https://images.unsplash.com/photo-1505373877841-8d25f96d553e?auto=format&fit=crop&w=600&h=800&q=80" alt="Personal Coaching">
+          <span>Personal Coaching</span>
+        </button>
+      </div>
+    </div>
   </main>
   <footer>
     © <span id="year"></span> Alex Shvachko — Stay Real.
