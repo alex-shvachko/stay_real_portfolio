@@ -7,27 +7,162 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/css/styles.css">
+  <style>
+    body{margin:0; background:#ffffff; color:#111; overflow:hidden;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;}
+    canvas#stage{position:fixed; inset:0; width:100vw; height:100vh; display:block;}
+    .hint{position:fixed; left:50%; bottom:26px; transform:translateX(-50%);
+      background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.07); color:#333;
+      padding:8px 12px; border-radius:12px; font-size:12px; letter-spacing:.2px;}
+  </style>
 </head>
 <body>
-  <canvas id="bg"></canvas>
-  <canvas id="fx"></canvas>
+  <canvas id="stage" aria-label="Interactive cube particle field"></canvas>
+  <div class="hint">Move your cursor close to the cube to disintegrate it • Tap/drag on mobile</div>
 
   <header>
     <nav class="nav">
       <div class="links">
+        <a class="pill" href="../">Home</a>
         <a class="pill active" href="../projects/">Projects</a>
         <a class="pill" href="../services/">Services</a>
         <a class="pill" href="../about/">About me</a>
       </div>
     </nav>
   </header>
-
-  <main></main>
-
   <footer>
     © <span id="year"></span> Alex Shvachko — Stay Real.
   </footer>
 
   <script defer src="../assets/js/app.js"></script>
+  <script>
+(function(){
+  const cvs = document.getElementById('stage');
+  const ctx = cvs.getContext('2d');
+  const DPR = Math.min(devicePixelRatio || 1, 2);
+
+  let W=0, H=0, last=performance.now();
+  // Particle grid params
+  let GRID = 52; // cells per side (auto-tuned)
+  let SIZE = 0;  // cube side (px * DPR)
+  let CX=0, CY=0; // cube center
+  let CELL=0;     // cell size
+  let EXP=0;      // current explode factor 0..1
+
+  const particles=[]; // {x,y,vx,vy,homeX,homeY,mass}
+  const mouse={x:0,y:0,vx:0,vy:0, active:false};
+
+  function fit(){
+    W = cvs.width  = Math.floor(innerWidth * DPR);
+    H = cvs.height = Math.floor(innerHeight * DPR);
+    cvs.style.width = innerWidth+'px';
+    cvs.style.height= innerHeight+'px';
+
+    // Cube size ~34% of min dimension
+    const S = Math.floor(Math.min(W,H) * 0.34);
+    SIZE = S; CX = Math.floor(W*0.5); CY = Math.floor(H*0.5);
+
+    // Grid resolution keeps ~12px cells (CSS px)
+    GRID = Math.max(36, Math.min(80, Math.round(S/12)));
+    CELL = S / GRID;
+
+    // Rebuild particles
+    particles.length = 0;
+    const startX = CX - S/2 + CELL/2;
+    const startY = CY - S/2 + CELL/2;
+    for(let gy=0; gy<GRID; gy++){
+      for(let gx=0; gx<GRID; gx++){
+        const hx = startX + gx*CELL; // home position
+        const hy = startY + gy*CELL;
+        // tiny jitter for organic feel (they still snap home exactly)
+        const jx = (Math.random() - 0.5) * CELL * 0.10;
+        const jy = (Math.random() - 0.5) * CELL * 0.10;
+        particles.push({ x:hx+jx, y:hy+jy, vx:0, vy:0, homeX:hx, homeY:hy, mass: 0.8 + Math.random()*0.6 });
+      }
+    }
+  }
+
+  function onMove(e){
+    const cx = (e.touches? e.touches[0].clientX : e.clientX) * DPR;
+    const cy = (e.touches? e.touches[0].clientY : e.clientY) * DPR;
+    mouse.vx = cx - mouse.x; mouse.vy = cy - mouse.y;
+    mouse.x = cx; mouse.y = cy; mouse.active = true;
+  }
+  addEventListener('mousemove', onMove, {passive:true});
+  addEventListener('touchmove', onMove, {passive:true});
+  addEventListener('mouseleave', ()=> mouse.active=false);
+  addEventListener('resize', fit);
+
+  // smoothstep helper
+  function smooth(t){ return t*t*(3-2*t); }
+
+  function step(dt){
+    // proximity to cube center controls explode
+    const dToCenter = Math.hypot(mouse.x - CX, mouse.y - CY);
+    const triggerR   = Math.max(SIZE * 0.85, 220*DPR); // within this, break apart
+    let explode = 1 - Math.min(1, dToCenter / triggerR);
+    EXP = Math.max(0, explode);
+
+    const springK = 0.035; // attraction back home
+    const damping = 0.90;
+
+    for(const p of particles){
+      // spring toward the exact grid home to guarantee a quilted surface
+      const ax = (p.homeX - p.x) * springK;
+      const ay = (p.homeY - p.y) * springK;
+      p.vx += ax; p.vy += ay;
+
+      // local repulsion from cursor when near (inverse-square)
+      if(EXP>0){
+        const dx = p.x - mouse.x; const dy = p.y - mouse.y;
+        const dist2 = dx*dx + dy*dy + 1;
+        const force = (EXP * 1800) / dist2;
+        p.vx += dx * force / p.mass;
+        p.vy += dy * force / p.mass;
+        // swirl for organic break
+        const swirl = EXP * 0.12; p.vx += -dy * 0.0008 * swirl; p.vy +=  dx * 0.0008 * swirl;
+      }
+
+      // integrate
+      p.vx *= damping; p.vy *= damping;
+      p.x  += p.vx * (dt*0.06);
+      p.y  += p.vy * (dt*0.06);
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    // soft boundary shadow so intact cube reads as one object
+    ctx.save();
+    ctx.fillStyle = 'rgba(0,0,0,0.035)';
+    const s = SIZE * 1.06; ctx.fillRect(CX - s/2, CY - s/2, s, s);
+    ctx.restore();
+
+    // dynamic particle size: when assembled, slightly oversize to remove seams
+    const k = smooth(1 - EXP); // 0 exploded -> 1 assembled
+    const sizeExploded = CELL * 0.58;  // smaller tiles when scattered
+    const sizeAssembled= CELL * 1.08;  // slight overlap (8%) to eliminate white lines
+    const r = sizeExploded + (sizeAssembled - sizeExploded) * k;
+
+    ctx.fillStyle = '#111111';
+    const w = Math.ceil(r)+1; // expand a touch to cover subpixel gaps
+    for(const p of particles){
+      const x = Math.round(p.x - r/2);
+      const y = Math.round(p.y - r/2);
+      ctx.fillRect(x, y, w, w);
+    }
+  }
+
+  function frame(now){
+    const dt = Math.min(60, now - last); last = now;
+    step(dt); draw(); requestAnimationFrame(frame);
+  }
+
+  fit(); requestAnimationFrame(frame);
+})();
+  </script>
 </body>
+</html>
 </html>

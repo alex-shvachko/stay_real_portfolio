@@ -47,3 +47,18 @@ section#route{ width:100%; max-width:1000px; margin:70px auto 20px; min-height:2
 
 footer{ padding:40px 16px; color:#8088ac; text-align:center; }
 @media (max-width:560px){ .nav .links a{ padding:8px 11px; } }
+
+/* Services gallery */
+main.gallery{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+  gap:20px;
+  align-items:initial;
+  justify-content:initial;
+}
+main.gallery img{
+  width:100%;
+  height:auto;
+  border-radius:12px;
+  display:block;
+}
