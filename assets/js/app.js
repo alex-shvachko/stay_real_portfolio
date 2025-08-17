@@ -1,112 +1,3 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Stay Real — Alex Shvachko</title>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg:#000; /* deep dark scene */
-      --text:#f5f7ff;
-      --muted:#9aa1bd;
-      --border:#22263a;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; color:var(--text); background:var(--bg);
-      font-family:'Outfit', ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, 'Helvetica Neue', Arial;
-      overflow-x:hidden; -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
-    }
-
-    /* Background canvases */
-    canvas#bg{ position:fixed; inset:0; width:100%; height:100%; z-index:-2; display:block; }
-    /* FX overlay: warm spotlight follows cursor */
-    canvas#fx{ position:fixed; inset:0; width:100%; height:100%; z-index:12; pointer-events:none; mix-blend-mode:screen; }
-
-    /* Header */
-    header{ position:fixed; top:0; left:0; right:0; z-index:15;
-      backdrop-filter: blur(8px) saturate(120%);
-      background:linear-gradient(180deg, rgba(6,7,12,.75), rgba(6,7,12,0));
-      border-bottom:1px solid var(--border);
-    }
-    .nav{ max-width:1100px; margin:0 auto; display:flex; align-items:center; justify-content:flex-end; padding:14px 18px; gap:8px; }
-    .links{ display:flex; gap:8px; align-items:center; }
-    .pill{ color:var(--text); text-decoration:none; font-weight:600; padding:10px 14px; border-radius:12px; position:relative;
-      transition: transform .15s ease, background .25s ease, box-shadow .25s ease, letter-spacing .2s ease; border:1px solid var(--border);
-      background:linear-gradient(180deg, #0c0f20, #0a0d1a); }
-    .pill:hover{ background:linear-gradient(180deg, #0f1222, #0b0d18); box-shadow:0 0 0 1px #2b3150, 0 0 18px rgba(255,210,120,.25), inset 0 0 12px #131731; letter-spacing:.2px; }
-    .pill:active{ transform:scale(0.97); }
-    .active{ background:linear-gradient(200deg, #121632, #0b0e22); box-shadow:0 0 16px rgba(255,210,120,.25), inset 0 0 12px #161a36; }
-
-    /* Hero */
-    main{ max-width:1100px; margin:0 auto; padding:140px 18px 80px; min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; }
-    /* 2D logo canvas */
-    #logo{ display:block; width:min(1100px, 92vw); height:clamp(160px, 26vw, 260px); margin:0 auto; }
-    .byline{ margin-top:10px; font-size:clamp(14px, 2.6vw, 18px); color:#ffffff; opacity:0.92; font-weight:600; letter-spacing:.5px; }
-    p.subtitle{ max-width:720px; text-align:center; color:#9aa1bd; margin:14px auto 30px; font-weight:400; }
-
-    /* Route container */
-    section#route{ width:100%; max-width:1000px; margin:70px auto 20px; min-height:240px; border:1px dashed #2a2f58; border-radius:16px; background:linear-gradient(180deg, rgba(8,10,20,.65), rgba(8,10,20,.45)); backdrop-filter: blur(6px); }
-    .route-inner{ padding:24px; }
-    .route-title{ font-weight:800; letter-spacing:.6px; color:#c8ccff; margin-bottom:6px; font-family:'Orbitron', sans-serif; }
-    .route-note{ color:#8e95b6; font-size:.95rem; }
-
-    footer{ padding:40px 16px; color:#8088ac; text-align:center; }
-    @media (max-width:560px){ .nav .links a{ padding:8px 11px; } }
-  </style>
-</head>
-<body>
-  <canvas id="bg"></canvas>
-  <canvas id="fx"></canvas>
-
-  <header>
-    <nav class="nav">
-      <div class="links">
-        <a class="pill" href="#/projects" data-link>Projects</a>
-        <a class="pill" href="#/services" data-link>Services</a>
-        <a class="pill" href="#/about" data-link>About me</a>
-      </div>
-    </nav>
-  </header>
-
-  <main>
-    <canvas id="logo" aria-label="Stay Real logotype"></canvas>
-    <div class="byline">Alex Shvachko</div>
-    <p class="subtitle">2D pure-white logo with page-wide warm lighting. Heavier starfall added in the background.</p>
-
-    <section id="route" aria-live="polite" aria-busy="false">
-      <div class="route-inner" id="route-inner"><!-- Route content here --></div>
-    </section>
-  </main>
-
-  <footer>
-    © <span id="year"></span> Alex Shvachko — Stay Real.
-  </footer>
-
-<script>
-// ======= Tiny Router (hash-based) =======
-(function(){
-  const links = document.querySelectorAll('[data-link]');
-  const routeBox = document.getElementById('route-inner');
-  const headerLinks = Array.from(links);
-  function setActive(path){ headerLinks.forEach(a=> a.classList.toggle('active', a.getAttribute('href') === path)); }
-  function render(){
-    const hash = location.hash || '#/home';
-    setActive(hash);
-    let title = 'Home';
-    if(hash.startsWith('#/projects')) title = 'Projects';
-    else if(hash.startsWith('#/services')) title = 'Services';
-    else if(hash.startsWith('#/about')) title = 'About me';
-    routeBox.innerHTML = `
-      <div class="route-title">${title}</div>
-      <div class="route-note">${title === 'Home' ? 'Welcome. Use the navigation above.' : 'This page is intentionally left blank.'}</div>
-    `;
-  }
-  window.addEventListener('hashchange', render); render();
-})();
 
 // ======= Ripple + Magnetic nav =======
 (function(){
@@ -145,6 +36,7 @@
 // ======= STARFIELD + STARFALL (heavier meteors in background) =======
 (function(){
   const canvas = document.getElementById('bg');
+  if(!canvas) return;
   const ctx = canvas.getContext('2d', { alpha: true });
   const DPR = Math.min(window.devicePixelRatio || 1, 2);
 
@@ -248,6 +140,7 @@
 // ======= Warm Spotlight + Comet Trail (foreground) =======
 (function(){
   const canvas = document.getElementById('fx');
+  if(!canvas) return;
   const ctx = canvas.getContext('2d', { alpha:true });
   const DPR = Math.min(window.devicePixelRatio||1, 2);
   let W=0, H=0, last=performance.now();
@@ -304,6 +197,7 @@
 // ======= 2D LOGO Canvas (pure white; page-wide control; elongated reveal) =======
 (function(){
   const canvas = document.getElementById('logo');
+  if(!canvas) return;
   const ctx = canvas.getContext('2d');
   const DPR = Math.min(window.devicePixelRatio||1, 2);
 
@@ -367,6 +261,3 @@
 
 // Year
 (document.getElementById('year')||{}).textContent = new Date().getFullYear();
-</script>
-</body>
-</html>
