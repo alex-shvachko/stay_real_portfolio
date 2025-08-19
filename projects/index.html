@@ -432,6 +432,7 @@
     buttonLabels.forEach((label, i) => {
       const btn = document.createElement('button');
       btn.className = 'skill-button'; btn.textContent = label;
+      if (transformTriggered) btn.classList.add('visible');
       document.body.appendChild(btn);
       const angle = i * angleStep - Math.PI/2;
       const x = CX + Math.cos(angle) * radius;
