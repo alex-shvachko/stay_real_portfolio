@@ -1,344 +1,328 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Digital Marketing — Alex Shvachko</title>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../../assets/css/styles.css">
-  <style>
-    :root {
-      --ink: #111;
-      --muted: #565656;
-      --shell: #ffffff;
-      --ring: rgba(0,0,0,.08);
-    }
-    * { box-sizing: border-box; }
-    body { 
-      margin: 0; 
-      padding: 0; 
-      background: var(--shell); 
-      color: var(--ink);
-      font-family: 'Outfit', system-ui, -apple-system, sans-serif;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Marketing Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    header {
-      position: sticky; 
-      top: 0; 
-      z-index: 10;
-      backdrop-filter: saturate(140%) blur(6px);
-      background: rgba(255,255,255,.7);
-      border-bottom: 1px solid var(--ring);
-    }
-    
-    .nav {
-      max-width: 1080px; 
-      margin: 0 auto; 
-      padding: 12px 16px;
-      display: flex; 
-      gap: 10px; 
-      justify-content: center; 
-      align-items: center;
-    }
-    
-    .pill {
-      padding: 8px 14px; 
-      border-radius: 999px;
-      text-decoration: none; 
-      color: #222; 
-      border: 1px solid var(--ring);
-      background: #fff; 
-      font-size: 14px;
-      transition: all 0.2s ease;
-    }
-    
-    .pill:hover {
-      background: #f5f5f5;
-    }
-    
-    .pill.active { 
-      background: #111; 
-      color: #fff; 
-      border-color: #111; 
-    }
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #ffffff;
+        }
 
-    /* Hero */
-    .hero {
-      max-width: 1100px; 
-      margin: 64px auto 28px; 
-      padding: 0 16px; 
-      text-align: center;
-    }
-    
-    .hero h1 {
-      font-family: "Libre Baskerville", Georgia, "Times New Roman", serif;
-      font-weight: 700;
-      letter-spacing: .01em;
-      line-height: 1.05;
-      margin: 0;
-      color: #000;
-      font-size: clamp(36px, 7.2vw, 88px);
-    }
-    
-    .hero p {
-      margin: 18px auto 0; 
-      max-width: 760px;
-      color: var(--muted);
-      font-size: clamp(14px, 2.2vw, 18px);
-      line-height: 1.5;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
 
-    /* Horizontal non-scrollable gallery */
-    .gallery-container {
-      max-width: 1200px;
-      margin: 48px auto;
-      padding: 0 16px;
-      overflow: hidden;
-    }
-    
-    .gallery {
-      display: flex;
-      gap: 24px;
-      padding: 16px 0;
-      width: 100%;
-      justify-content: center;
-      flex-wrap: nowrap;
-    }
-    
-    .gallery-item {
-      position: relative;
-      flex: 0 0 350px;
-      height: 500px;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    
-    .gallery-item:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 16px 48px rgba(0,0,0,0.15);
-    }
-    
-    .gallery-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.8s ease;
-    }
-    
-    .gallery-item:hover img {
-      transform: scale(1.05);
-    }
-    
-    .gallery-caption {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      padding: 24px;
-      background: linear-gradient(transparent, rgba(0,0,0,0.8));
-      color: white;
-      font-family: 'Outfit', sans-serif;
-      transform: translateY(20px);
-      opacity: 0;
-      transition: all 0.4s ease;
-    }
-    
-    .gallery-item:hover .gallery-caption {
-      transform: translateY(0);
-      opacity: 1;
-    }
-    
-    .gallery-caption h3 {
-      margin: 0 0 8px 0;
-      font-size: 1.4rem;
-      font-weight: 600;
-    }
-    
-    .gallery-caption p {
-      margin: 0;
-      font-size: 0.95rem;
-      line-height: 1.5;
-      opacity: 0.9;
-    }
+        /* Header */
+        header {
+            padding: 20px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
 
-    /* Copy section */
-    .copy {
-      max-width: 900px; 
-      margin: 38px auto 72px; 
-      padding: 0 16px;
-    }
-    
-    .copy h2 {
-      margin: 0.2em 0 0.35em; 
-      font-size: clamp(22px, 3.6vw, 34px);
-      line-height: 1.2;
-      font-family: "Libre Baskerville", Georgia, serif;
-    }
-    
-    .copy p { 
-      color: var(--muted); 
-      font-size: clamp(14px, 2.2vw, 18px); 
-      margin: 0.7em 0; 
-      line-height: 1.6;
-    }
-    
-    .copy .grid {
-      display: grid; 
-      gap: 16px; 
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      margin-top: 24px;
-    }
-    
-    .card {
-      border: 1px solid var(--ring); 
-      border-radius: 12px; 
-      padding: 20px;
-      background: #fff;
-      transition: all 0.3s ease;
-    }
-    
-    .card:hover {
-      border-color: #ddd;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.05);
-      transform: translateY(-2px);
-    }
-    
-    .card strong {
-      display: block;
-      font-size: 18px;
-      margin-bottom: 8px;
-      color: #111;
-    }
-    
-    .card p {
-      margin: 0;
-      font-size: 15px;
-      color: #666;
-    }
-    
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      .nav {
-        flex-wrap: wrap;
-        padding: 8px 12px;
-      }
-      
-      .pill {
-        padding: 6px 12px;
-        font-size: 13px;
-      }
-      
-      .hero {
-        margin: 40px auto 20px;
-      }
-      
-      .copy .grid {
-        grid-template-columns: 1fr;
-      }
-    }
-    
-    /* Back button */
-    .back-button {
-      display: inline-block;
-      margin: 20px 0 0 16px;
-      color: #666;
-      text-decoration: none;
-      font-size: 14px;
-      transition: color 0.2s ease;
-    }
-    
-    .back-button:hover {
-      color: #111;
-    }
-    
-    .back-button::before {
-      content: "← ";
-    }
-  </style>
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #3498db;
+        }
+
+        /* Hero Section with Image Gallery */
+        .hero {
+            padding: 60px 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            font-weight: 300;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: #7f8c8d;
+            margin-bottom: 50px;
+            font-weight: 300;
+        }
+
+        /* Image Gallery */
+        .image-gallery {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 60px;
+            flex-wrap: wrap;
+        }
+
+        .gallery-item {
+            width: 300px;
+            height: 200px;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Section Styling */
+        .diversity, .options, .aesthetics {
+            padding: 80px 0;
+        }
+
+        .diversity {
+            background-color: #ffffff;
+        }
+
+        .options {
+            background-color: #fafafa;
+        }
+
+        .aesthetics {
+            background-color: #ffffff;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 300;
+            color: #2c3e50;
+            margin-bottom: 60px;
+        }
+
+
+
+        /* CTA Section */
+        .cta {
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .cta h2 {
+            font-size: 36px;
+            font-weight: 300;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .cta p {
+            font-size: 18px;
+            color: #7f8c8d;
+            margin-bottom: 40px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+        }
+
+        /* Footer */
+        footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero-subtitle {
+                font-size: 18px;
+            }
+
+            .image-gallery {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .gallery-item {
+                width: 100%;
+                max-width: 400px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <a href="../../services/" class="back-button">Back to Services</a>
-    <nav class="nav">
-      <a class="pill" href="../../">Home</a>
-      <a class="pill" href="../../projects/">Projects</a>
-      <a class="pill" href="../../services/">Services</a>
-      <a class="pill" href="../../contact/">Contact</a>
-    </nav>
-  </header>
-
-  <main>
-    <section class="hero">
-      <h1>AI Driven Content Creation</h1>
-      <p>Strategy, copy, visuals, and distribution—designed and accelerated by automation and human taste.</p>
-    </section>
-
-    <section class="gallery-container" aria-label="Content creation process">
-      <div class="gallery">
-        <div class="gallery-item">
-          <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80" alt="Team collaboration and ideation">
-          <div class="gallery-caption">
-            <h3>Ideation & Strategy</h3>
-            <p>Brainstorming creative concepts and developing data-driven strategies</p>
-          </div>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">Vision Digital</div>
+                <ul class="nav-links">
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
         </div>
+    </header>
 
-        <div class="gallery-item">
-          <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80" alt="Data analysis and optimization">
-          <div class="gallery-caption">
-            <h3>Data-Backed Execution</h3>
-            <p>Implementing campaigns with measurable results and continuous optimization</p>
-          </div>
-        </div>
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>Digital Marketing Excellence</h1>
+                <p class="hero-subtitle">Transforming brands through strategic digital solutions</p>
+                
+                <div class="image-gallery">
+                    <div class="gallery-item">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjBmMGYwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNzc3IiBmb250LXNpemU9IjE2Ij5FWUVTMVwucG5nPC90ZXh0Pgo8L3N2Zz4=" alt="Eyes 1 - Focused Vision">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjBmMGYwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNzc3IiBmb250LXNpemU9IjE2Ij5FWUVTMlwucG5nPC90ZXh0Pgo8L3N2Zz4=" alt="Eyes 2 - Clear Perspective">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjBmMGYwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNzc3IiBmb250LXNpemU9IjE2Ij5FWUVTM1wucG5nPC90ZXh0Pgo8L3N2Zz4=" alt="Eyes 3 - Strategic Insight">
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        <div class="gallery-item">
-          <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80" alt="Final campaign results">
-          <div class="gallery-caption">
-            <h3>Refinement & Launch</h3>
-            <p>Perfecting the message and deploying high-impact digital campaigns</p>
-          </div>
-        </div>
-      </div>
-    </section>
+        <section class="diversity">
+            <div class="container">
+                <h2 class="section-title">DIVERSITY</h2>
+                
+                <div class="image-gallery">
+                    <div class="gallery-item">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjBmMGYwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNzc3IiBmb250LXNpemU9IjE2Ij5ESVZFUFJTTI0xPC90ZXh0Pgo8L3N2Zz4=" alt="Diversity Image 1">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjBmMGYwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNzc3IiBmb250LXNpemU9IjE2Ij5ESVZFUFJTI0Y8L3RleHQ+Cjwvc3ZnPg==" alt="Diversity Image 2">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjBmMGYwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNzc3IiBmb250LXNpemU9IjE2Ij5ESVZFUERJMS0zPC90ZXh0Pgo8L3N2Zz4=" alt="Diversity Image 3">
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <section class="copy">
-      <h2>From Brief to Publish — Fast</h2>
-      <p>We turn ideas into shippable artifacts: landing pages, email flows, social video, and long-form posts. AI helps with scale; human expertise ensures quality and brand alignment.</p>
+        <section class="options">
+            <div class="container">
+                <h2 class="section-title">OPTIONS</h2>
+                
+                <div class="image-gallery">
+                    <div class="gallery-item">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjBmMGYwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNzc3IiBmb250LXNpemU9IjE2Ij5PUFRJT04tMTwvdGV4dD4KPC9zdmc+" alt="Option 1">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjBmMGYwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNzc3IiBmb250LXNpemU9IjE2Ij5PUFRJT04tMjwvdGV4dD4KPC9zdmc+" alt="Option 2">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjBmMGYwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNzc3IiBmb250LXNpemU9IjE2Ij5PUFRJT04tMzwvdGV4dD4KPC9zdmc+" alt="Option 3">
+                    </div>
+                </div>
+            </div>
+        </section>
 
-      <div class="grid">
-        <div class="card">
-          <strong>Content Strategy</strong>
-          <p>Data-driven content plans that align with your business goals and audience needs.</p>
-        </div>
-        <div class="card">
-          <strong>Copywriting</strong>
-          <p>Compelling, on-brand copy that converts across all digital channels.</p>
-        </div>
-        <div class="card">
-          <strong>Visual Content</strong>
-          <p>Eye-catching graphics and videos that bring your message to life.</p>
-        </div>
-        <div class="card">
-          <strong>SEO & Analytics</strong>
-          <p>Optimized content that ranks well and delivers measurable results.</p>
-        </div>
-      </div>
-    </section>
-  </main>
+        <section class="aesthetics">
+            <div class="container">
+                <h2 class="section-title">AESTHETICS</h2>
+                
+                <div class="image-gallery">
+                    <div class="gallery-item">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjBmMGYwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNzc3IiBmb250LXNpemU9IjE2Ij5BRVNUSEVUSUNTLTE8L3RleHQ+Cjwvc3ZnPg==" alt="Aesthetics 1">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjBmMGYwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNzc3IiBmb250LXNpemU9IjE2Ij5BRVNUSEVUSUNTLTI8L3RleHQ+Cjwvc3ZnPg==" alt="Aesthetics 2">
+                    </div>
+                    <div class="gallery-item">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjZjBmMGYwIi8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjNzc3IiBmb250LXNpemU9IjE2Ij5BRVNUSEVUSUNTLTM8L3RleHQ+Cjwvc3ZnPg==" alt="Aesthetics 3">
+                    </div>
+                </div>
+            </div>
+        </section>
 
-  <script>
-    // Add smooth scrolling to all links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-          behavior: 'smooth'
+        <section class="cta">
+            <div class="container">
+                <h2>Ready to Transform Your Digital Presence?</h2>
+                <p>Let's work together to create a digital marketing strategy that delivers real results.</p>
+                <a href="#contact" class="btn">Get Started Today</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Vision Digital. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
         });
-      });
-    });
-  </script>
+
+
+    </script>
 </body>
 </html>
