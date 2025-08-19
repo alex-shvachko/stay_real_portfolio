@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
   container.style.position = 'relative';
   container.style.width = '100%';
   container.style.margin = '1rem 0 0';
-  container.style.paddingBottom = '4rem';
+  container.style.paddingBottom = '0';
   container.style.pointerEvents = 'none';
   container.style.overflow = 'visible';
   
@@ -40,8 +40,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const trunkLength = trunkBottom - 5;
   const viewBoxHeight = trunkBottom + 5; // Extra padding at bottom
 
-  // Set a min-height that scales with the tree
-  container.style.minHeight = `${viewBoxHeight * 1.1}vh`;
+  // Set a height that matches the tree
+  container.style.height = `${viewBoxHeight}vh`;
 
   // Create SVG element with dynamic viewBox
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
