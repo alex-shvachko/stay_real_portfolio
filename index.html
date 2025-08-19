@@ -90,9 +90,9 @@
     .tech-tree-container {
       position: relative;
       width: 100%;
-      min-height: 180vh;  /* Increased to match JS container */
+      min-height: 160vh;
       margin: 2rem 0;
-      padding-bottom: 8rem;  /* More padding at bottom */
+      padding-bottom: 2rem;
       pointer-events: none;
       z-index: 1;
       overflow: visible;
@@ -431,8 +431,7 @@
           
           if (chipGroup) {
             chipGroup.style.opacity = Math.min(1, branchProgress * 1.2);
-            const translateY = (1 - branchProgress) * 4;
-            chipGroup.style.transform = `translateY(${translateY}px)`;
+            chipGroup.style.transform = 'translateY(0)';
           }
           
           // Animate decorative elements
@@ -483,7 +482,7 @@
         treeContainer.style.marginTop = '100px'; // Space after bio
         
         // Set initial height (will be adjusted by scroll handler)
-        const minHeight = window.innerHeight * 1.5; // At least 1.5 viewport heights
+        const minHeight = window.innerHeight * 1.2;
         treeContainer.style.height = `${minHeight}px`;
         
         // Update scroll handler to pin the tree while scrolling

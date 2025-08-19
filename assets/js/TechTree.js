@@ -97,7 +97,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Create chip group
     const chipGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     chipGroup.style.opacity = '0';
-    chipGroup.style.transform = 'translateY(4px)';
     
     // Create chip background
     const chipBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
@@ -187,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
       if (skill.chipGroup) {
         const chipProgress = Math.min(1, branchProgress * 2.5);
         skill.chipGroup.style.opacity = chipProgress;
-        skill.chipGroup.style.transform = `translateY(${(1 - chipProgress) * 4}px) scale(${0.95 + (chipProgress * 0.1)})`;
+        skill.chipGroup.style.transform = `scale(${0.95 + (chipProgress * 0.1)})`;
         skill.chipGroup.style.transition = 'opacity 0.3s ease-out, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
       }
     });
