@@ -28,15 +28,24 @@ document.addEventListener('DOMContentLoaded', function() {
   // Style the container
   container.style.position = 'relative';
   container.style.width = '100%';
-  container.style.minHeight = '180vh'; // Increased height to accommodate all items
   container.style.margin = '1rem 0 0';
   container.style.paddingBottom = '4rem';
   container.style.pointerEvents = 'none';
   container.style.overflow = 'visible';
   
-  // Create SVG element with adjusted viewBox
+  // Calculate dynamic dimensions based on skill count
+  const startY = 15; // Starting Y position for first branch
+  const branchSpacing = 12; // Space between branch levels
+  const trunkBottom = startY + branchSpacing * (skills.length - 1) + 10; // End of trunk
+  const trunkLength = trunkBottom - 5;
+  const viewBoxHeight = trunkBottom + 5; // Extra padding at bottom
+
+  // Set a min-height that scales with the tree
+  container.style.minHeight = `${viewBoxHeight * 1.1}vh`;
+
+  // Create SVG element with dynamic viewBox
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.setAttribute('viewBox', '0 0 100 140'); // Increased height to fit all items
+  svg.setAttribute('viewBox', `0 0 100 ${viewBoxHeight}`);
   svg.setAttribute('preserveAspectRatio', 'xMidYMin meet');
   svg.style.position = 'absolute';
   svg.style.top = '0';
@@ -45,19 +54,16 @@ document.addEventListener('DOMContentLoaded', function() {
   svg.style.height = '100%';
   container.appendChild(svg);
 
-  // Add main trunk line
+  // Add main trunk line sized to content
   const trunk = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-  // Extend trunk to reach all leaves with extra length
-  trunk.setAttribute('d', 'M50 5 L50 180');
+  trunk.setAttribute('d', `M50 5 L50 ${trunkBottom}`);
   trunk.setAttribute('stroke', '#000000');
   trunk.setAttribute('stroke-width', '0.6');
   trunk.setAttribute('fill', 'none');
   trunk.setAttribute('stroke-linecap', 'round');
   svg.appendChild(trunk);
 
-  // Create skill branches with better spacing
-  const branchSpacing = 10; // Slightly more space between branches
-  const startY = 15; // Starting Y position
+  // Create skill branches with balanced spacing
   
   skills.forEach((skill, index) => {
     const yPos = startY + (index * branchSpacing);
@@ -142,8 +148,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Animate trunk with more pronounced effect
-    trunk.style.strokeDasharray = '80';
-    trunk.style.strokeDashoffset = 80 * (1 - Math.pow(scrollProgress, 0.7));
+    trunk.style.strokeDasharray = trunkLength;
+    trunk.style.strokeDashoffset = trunkLength * (1 - Math.pow(scrollProgress, 0.7));
 
     // Animate branches with adjusted timing
     skills.forEach((skill, index) => {
