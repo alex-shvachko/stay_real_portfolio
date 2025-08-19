@@ -10,8 +10,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script defer src="assets/js/main.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
-  <script defer src="assets/js/particles-config.js"></script>
-  <script defer src="assets/js/TechTree.js"></script>
+    <script defer src="assets/js/particles-config.js"></script>
 </head>
 <body>
   <div id="particles-js"></div>
@@ -87,16 +86,16 @@
     }
     
     /* TechTree styles */
-    .tech-tree-container {
-      position: relative;
-      width: 100%;
-      min-height: 180vh;  /* Increased to match JS container */
-      margin: 2rem 0;
-      padding-bottom: 8rem;  /* More padding at bottom */
-      pointer-events: none;
-      z-index: 1;
-      overflow: visible;
-    }
+      .tech-tree-container {
+        position: relative;
+        width: 100%;
+        min-height: 180vh;  /* Increased to match JS container */
+        margin: 2rem 0;
+        padding-bottom: 0;
+        pointer-events: none;
+        z-index: 1;
+        overflow: visible;
+      }
     
     .tech-tree-container svg {
       position: absolute;
@@ -208,7 +207,7 @@
 
       // trunk - dynamic height based on content
       const trunkStartY = 10;
-      const trunkEndY = VIEWBOX_HEIGHT - 10;
+        const trunkEndY = VIEWBOX_HEIGHT - 2;
       const trunkX = VIEWBOX_WIDTH / 2;
       
       const trunk = document.createElementNS(svgNS, 'path');
@@ -429,10 +428,10 @@
             dot.style.opacity = Math.min(1, branchProgress * 1.5);
           }
           
-          if (chipGroup) {
-            chipGroup.style.opacity = Math.min(1, branchProgress * 1.2);
-            const translateY = (1 - branchProgress) * 4;
-            chipGroup.style.transform = `translateY(${translateY}px)`;
+        if (chipGroup) {
+            const appear = Math.max(0, branchProgress - 0.8) / 0.2;
+            chipGroup.style.opacity = Math.min(1, appear);
+            chipGroup.style.transform = 'translateY(0)';
           }
           
           // Animate decorative elements
