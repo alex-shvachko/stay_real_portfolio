@@ -248,11 +248,66 @@
         </div>
       `
     },
-    'Machine Learning': { title: 'Machine Learning Project', content: 'Coming soon...' },
+    'Machine Learning': {
+      title: 'Wafer Scratch Detection — Semiconductor Yield Optimization',
+      content: `
+        <h2>Backstory</h2>
+        <p>Semiconductor fabrication produces thousands of dies per wafer, where even minor defects can cascade into massive production losses. Among these, scratch patterns are particularly challenging to detect: they often appear as subtle, elongated streaks hidden within dense arrays of mostly functional dies. Manual inspection is slow and inconsistent, making automation essential.</p>
+
+        <h2>Approach</h2>
+        <p>I developed a machine learning pipeline to automatically detect wafer scratches and distinguish them from random die failures. The process included:</p>
+        <ul>
+          <li>Data preprocessing of large-scale wafer maps with millions of dies.</li>
+          <li>Feature engineering around spatial patterns: neighborhood bad-die density, distance to wafer edge, radial orientation, and clustering metrics.</li>
+          <li>Training a highly imbalanced binary classifier, optimized to maximize recall on scratch wafers while keeping false alarms manageable.</li>
+          <li>Applying explainability tools (SHAP values) to identify the features that drove detection (e.g., density of local bad dies, corridor ratios, radial alignment).</li>
+        </ul>
+
+        <h2>Results</h2>
+        <ul>
+          <li>ROC-AUC: 0.9984</li>
+          <li>Accuracy: 99.7% overall</li>
+          <li>F1-score for scratch class: 0.808, with recall of 0.826 (catching most scratch wafers).</li>
+          <li>Model consistently separated scratch patterns from random die distributions, as validated across multiple wafer sets.</li>
+          <li>Visual overlays confirmed that detected scratch regions aligned with the true elongated defect patterns.</li>
+        </ul>
+
+        <h2>Key Insights</h2>
+        <ul>
+          <li>Wafer yield alone was not sufficient; spatial arrangement of defects was the decisive factor.</li>
+          <li>Local density windows (5×5, 7×7, 10×10 neighborhoods) and line-detection features contributed most to model performance.</li>
+          <li>Explainability analysis showed that proximity to existing bad dies and scratch “corridor ratios” were strong predictors of systematic scratches.</li>
+        </ul>
+
+        <h2>Challenges</h2>
+        <ul>
+          <li>Severe class imbalance (scratch wafers were rare) required careful sampling and threshold tuning.</li>
+          <li>Need to balance recall (catching scratches) against specificity (avoiding false alarms on random failures).</li>
+          <li>Wafer patterns are high-dimensional but sparse; engineering interpretable spatial features was crucial.</li>
+        </ul>
+
+        <h2>Impact & Next Steps</h2>
+        <p>This system demonstrates how ML can augment semiconductor QA, replacing manual inspection with scalable, explainable automation. Next steps would include:</p>
+        <ul>
+          <li>Real-time deployment on wafer production lines.</li>
+          <li>Integration with optical image data for multimodal detection.</li>
+          <li>Adaptive thresholds tuned to fab-specific defect distributions.</li>
+        </ul>
+      `
+    },
     'Data Engineering': { title: 'Data Engineering Project', content: 'Coming soon...' },
     'Automations': { title: 'Automations Project', content: 'Coming soon...' },
     'AI Engineering': { title: 'AI Engineering Project', content: 'Coming soon...' },
-    'AI Art': { title: 'AI Art Project', content: 'Coming soon...' }
+    'AI Art': {
+      title: 'Generative Media & Visual Systems',
+      content: `
+        <p>I design reproducible pipelines for image and video generation using state-of-the-art multimodal models. My work focuses on creating minimal, high-fashion visuals with crisp white backgrounds, sharp lighting, and consistent wardrobe direction. Through structured prompt engineering and automation, I build systems that can generate cohesive series of portraits, cinematic motion clips, and thematic collections with precision and style.</p>
+
+        <p>To ensure reliability and scalability, I develop batch pipelines with n8n for automated prompt execution, seed tracking, and reproducible reruns. Each project is guided by a style framework that defines composition, lighting language, and accessory constraints, enabling consistency across different generative platforms. My practice also includes curating outputs, building theme libraries, and aligning results to brand-level aesthetics.</p>
+
+        <p>This approach combines creativity with engineering discipline: every image or clip is not just a one-off generation, but part of a controlled, repeatable workflow. The outcome is a body of work that demonstrates both artistic direction and technical mastery in generative AI.</p>
+      `
+    }
   };
   
   const buttonLabels = Object.keys(projects);
