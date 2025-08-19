@@ -34,13 +34,38 @@
       position: fixed;
       transform: translate(-50%, -50%);
       background: #111; color: white; border: none;
-      padding: 12px 24px; border-radius: 30px;
-      font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 16px;
+      padding: 18px 36px; border-radius: 36px; /* bigger */
+      font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 18px; /* bigger */
       cursor: pointer; opacity: 0; pointer-events: none; z-index: 2;
       transition: all 0.6s cubic-bezier(0.2, 0.8, 0.3, 1.1);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1); scale: 0.5;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12); scale: 0.5;
+      overflow: hidden; /* for light effect mask */
+      --x: 50%; --y: 50%;
     }
     .skill-button.visible { opacity: 1; pointer-events: auto; scale: 1; }
+
+    /* natural light effect on click */
+    .skill-button::after{
+      content: '';
+      position: absolute;
+      left: calc(var(--x) - 60px);
+      top: calc(var(--y) - 60px);
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      pointer-events: none;
+      background: radial-gradient(circle at center,
+        rgba(255,255,255,0.85) 0%,
+        rgba(255,255,255,0.55) 30%,
+        rgba(255,255,255,0.12) 60%,
+        rgba(255,255,255,0) 75%);
+      mix-blend-mode: screen;
+      opacity: 0; transform: scale(0.6);
+      transition: opacity .6s ease, transform .6s ease;
+      filter: blur(0.5px);
+    }
+    .skill-button.lit::after{
+      opacity: 1; transform: scale(1.25);
+    }
 
     .nav { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 100; }
     .links { display: flex; gap: 12px; }
@@ -70,6 +95,34 @@
       margin: 0 .32em;
     }
     .phrase-line .segment.revealed{ opacity: 1; transform: translateY(0); }
+
+    /* Modal (black popup) */
+    .modal-backdrop{
+      position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.8);
+      opacity: 0; pointer-events: none;
+      transition: opacity .28s ease;
+    }
+    .modal-backdrop.visible{ opacity:1; pointer-events:auto; }
+    .modal-content{
+      position: absolute; left:50%; top:50%; transform: translate(-50%,-50%);
+      width: min(90vw, 860px); min-height: 60vh;
+      background: #000; color: #fff;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; box-shadow: 0 24px 72px rgba(0,0,0,0.5);
+      padding: 24px 24px 32px; overflow: hidden;
+    }
+    .modal-close{
+      position:absolute; right:12px; top:10px;
+      width:36px; height:36px; border-radius:10px;
+      background: rgba(255,255,255,0.06); color:#fff;
+      border: 1px solid rgba(255,255,255,0.12);
+      cursor: pointer; font-size:20px; line-height: 1;
+      display:flex; align-items:center; justify-content:center;
+      transition: background .2s ease, transform .2s ease;
+    }
+    .modal-close:hover{ background: rgba(255,255,255,0.12); transform: translateY(-1px); }
+    .modal-body{ margin-top: 28px; color:#ddd; font-size: 15px; }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <script defer src="../assets/js/particles-config.js"></script>
@@ -83,37 +136,51 @@
   <div id="phraseTop" class="phrase-line" aria-hidden="true"></div>
   <div id="phraseBottom" class="phrase-line" aria-hidden="true"></div>
 
+  <!-- reusable black modal popup -->
+  <div id="modal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal-close" aria-label="Close">×</button>
+      <div class="modal-body">
+        <h2 id="modalTitle" style="margin:0;font-size:20px;font-weight:800;letter-spacing:.2px;">Coming soon</h2>
+        <p style="opacity:.8;margin-top:8px;">This section will be filled with project details.</p>
+      </div>
+    </div>
+  </div>
+
   <header>
     <nav class="nav">
       <div class="links">
         <a class="pill" href="../">Home</a>
         <a class="pill active" href="../projects/">Projects</a>
         <a class="pill" href="../services/">Services</a>
+        <a class="pill" href="../contact/">Contact Info</a>
       </div>
     </nav>
   </header>
   <footer>
-    © <span id="year">2025</span> Alex Shvachko — Stay Real.
+    &copy; <span id="year">2025</span> Alex Shvachko — Stay Real.
   </footer>
 
   <script>
-(function(){
-  const cvs = document.getElementById('stage');
-  const ctx = cvs.getContext('2d');
-  const hint = document.getElementById('hint');
-  const phraseTop = document.getElementById('phraseTop');
-  const phraseBottom = document.getElementById('phraseBottom');
-  const DPR = Math.min(devicePixelRatio || 1, 2);
+  (function(){
+    const cvs = document.getElementById('stage');
+    const ctx = cvs.getContext('2d');
+    const hint = document.getElementById('hint');
+    const phraseTop = document.getElementById('phraseTop');
+    const phraseBottom = document.getElementById('phraseBottom');
+    const modalEl = document.getElementById('modal');
+    const modalClose = modalEl.querySelector('.modal-close');
+    const DPR = Math.min(devicePixelRatio || 1, 2);
 
-  let W=0, H=0, last=performance.now();
-  let GRID = 105, SIZE = 0, CX=0, CY=0, CELL=0;
+    let W=0, H=0, last=performance.now();
+    let GRID = 105, SIZE = 0, CX=0, CY=0, CELL=0;
 
-  // State machine: 'idle' -> 'phrase' -> 'dismember' -> 'done'
-  let phase = 'idle';
-  let transformTriggered = false;
-  let transformProgress = 0;
-  let transformComplete = false;
-  let distortionAmount = 0;
+    // State machine: 'idle' -> 'phrase' -> 'dismember' -> 'done'
+    let phase = 'idle';
+    let transformTriggered = false;
+    let transformProgress = 0;
+    let transformComplete = false;
+    let distortionAmount = 0;
 
   const buttonLabels = [
     'Data Science','Machine Learning','Data Engineering',
@@ -124,10 +191,17 @@
 
   const mouse = {x:0, y:0, active:false, vx:0, vy:0, px:0, py:0};
 
+  // ----- Modal helpers -----
+  function openModal(){ modalEl.classList.add('visible'); modalEl.setAttribute('aria-hidden','false'); }
+  function closeModal(){ modalEl.classList.remove('visible'); modalEl.setAttribute('aria-hidden','true'); }
+  modalClose.addEventListener('click', closeModal);
+  modalEl.addEventListener('click', (e)=>{ if (e.target === modalEl) closeModal(); });
+  addEventListener('keydown', (e)=>{ if (e.key === 'Escape') closeModal(); });
+
   // ----- Phrase helpers -----
   const phraseTimeouts = [];
-  const topSegments = ['How much','can do'];
-  const bottomSegments = ['data engineer','in 2025?'];
+  const topSegments = ['What can a','data engineer'];
+  const bottomSegments = ['build','in 2025?'];
 
   function clearPhraseTimers(){ while (phraseTimeouts.length) clearTimeout(phraseTimeouts.pop()); }
   function buildPhrase(){
@@ -170,12 +244,12 @@
     positionPhrase();
     showPhrase();
 
-    // Reveal 1/4 every 0.75s
+    // Reveal 1/4 every 1.0s (slower cadence)
     const schedule = [
       { t: 0,     line: 'top',    idx: 0 },
-      { t: 750,   line: 'top',    idx: 1 },
-      { t: 1500,  line: 'bottom', idx: 0 },
-      { t: 2250,  line: 'bottom', idx: 1 },
+      { t: 1000,  line: 'top',    idx: 1 },
+      { t: 2000,  line: 'bottom', idx: 0 },
+      { t: 3000,  line: 'bottom', idx: 1 },
     ];
     schedule.forEach(item => {
       phraseTimeouts.push(setTimeout(() => {
@@ -185,12 +259,12 @@
       }, item.t));
     });
 
-    // After last reveal at 2250ms, wait +750ms => 3000ms total, then dismember
+    // After last reveal at 3000ms, wait +2000ms => 5000ms total, then dismember (extra time to read)
     phraseTimeouts.push(setTimeout(() => {
       hidePhrase();         // fade out text
       triggerTransform();   // start particle → buttons
       phase = 'dismember';
-    }, 3000));
+    }, 5000));
   }
 
   // ----- Buttons -----
@@ -208,6 +282,21 @@
       const y = CY + Math.sin(angle) * radius;
       btn.style.left = (x/DPR) + 'px';
       btn.style.top  = (y/DPR) + 'px';
+      // light effect listeners
+      const updateXY = (e) => {
+        const r = btn.getBoundingClientRect();
+        const cx = (e.clientX - r.left);
+        const cy = (e.clientY - r.top);
+        btn.style.setProperty('--x', cx + 'px');
+        btn.style.setProperty('--y', cy + 'px');
+      };
+      btn.addEventListener('pointermove', updateXY);
+      btn.addEventListener('pointerdown', (e) => {
+        updateXY(e);
+        btn.classList.add('lit');
+        setTimeout(() => btn.classList.remove('lit'), 450);
+      });
+      btn.addEventListener('click', openModal);
       buttons.push({ element: btn, x, y, angle, radius });
     });
   }
@@ -258,14 +347,14 @@
       setTimeout(() => btn.element.classList.add('visible'), i * 100);
     });
 
-    // particles fly to buttons
+    // particles fly to buttons (slightly slower launch)
     particles.forEach(p => {
       const buttonIndex = Math.floor(Math.random() * buttons.length);
       p.targetButton = buttons[buttonIndex];
       p.flying = true;
       const dx = p.targetButton.x - p.x, dy = p.targetButton.y - p.y;
       const dist = Math.hypot(dx, dy) || 1;
-      const speed = 2 + Math.random() * 3;
+      const speed = 1.6 + Math.random() * 2.2; // slower initial speed
       p.vx = (dx / dist) * speed; p.vy = (dy / dist) * speed;
     });
   }
@@ -290,7 +379,8 @@
         const speed = Math.hypot(mouse.vx, mouse.vy);
         const speedBoost = Math.min(1, speed / (28 * DPR));
         const target = Math.max(0, Math.min(1, (prox * 0.9 + speedBoost * 0.3) * 0.25));
-        distortionAmount += (target - distortionAmount) * 0.005;
+        // Faster easing towards target (reduce perceived delay to ~0.8x)
+        distortionAmount += (target - distortionAmount) * 0.00625;
       } else {
         distortionAmount *= 0.92;
       }
@@ -313,9 +403,9 @@
       if (p.flying && p.targetButton){
         const dx = p.targetButton.x - p.x, dy = p.targetButton.y - p.y;
         const dist = Math.hypot(dx, dy) || 1;
-        if (dist < 15 * DPR){ p.disappeared = true; continue; }
+        if (dist < 12 * DPR){ p.disappeared = true; continue; } // must get closer → slightly longer flight
 
-        const force = 0.08;
+        const force = 0.06; // gentler attraction → slower break
         p.vx += (dx / dist) * force; p.vy += (dy / dist) * force;
         p.vx += (Math.random()-0.5)*0.5; p.vy += (Math.random()-0.5)*0.5;
         p.vx *= 0.98; p.vy *= 0.98;
@@ -328,67 +418,123 @@
       transformComplete = true; phase = 'done'; clearPhraseTimers();
     }
   }
+  function drawCellSnapped(cx, cy, w, h, opacity = 1) {
+  // final pixel-aligned rectangle with +1 px overdraw to kill seams
+  const ix = Math.round(cx - w / 2);
+  const iy = Math.round(cy - h / 2);
+  const iw = Math.ceil(w) + 1;
+  const ih = Math.ceil(h) + 1;
+  if (opacity !== 1) ctx.globalAlpha = opacity;
+  ctx.fillRect(ix, iy, iw, ih);
+  if (opacity !== 1) ctx.globalAlpha = 1;
+}
 
-  function draw(){
+function draw(){
+  // Clear/fade
+  if (!transformTriggered) {
     ctx.clearRect(0,0,W,H);
-    if (transformComplete) return;
+  } else {
+    // Fade previous frame for a trailing effect during particle phase
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.fillStyle = 'rgba(0,0,0,0.06)'; // adjust alpha to control trail length
+    ctx.fillRect(0,0,W,H);
+    ctx.restore();
+  }
+  if (transformComplete) return;
 
-    if (!transformTriggered){
-      ctx.save();
-      ctx.fillStyle = '#111';
-      // fish-eye + swirl (unchanged)
-      const active = distortionAmount > 0 && mouse.active;
-      if (active){
-        const gridRes = 32;
-        const cellW = SIZE / gridRes, cellH = SIZE / gridRes;
-        const startX = CX - SIZE/2 + cellW/2, startY = CY - SIZE/2 + cellH/2;
-        const maxEffect = SIZE * 0.80;
-        const baseHole  = Math.max(12 * DPR, SIZE * 0.12);
-        const hole      = baseHole + distortionAmount * SIZE * 0.10;
+  if (!transformTriggered) {
+    ctx.save();
+    ctx.fillStyle = '#111111';
 
-        for (let gy=0; gy<gridRes; gy++){
-          for (let gx=0; gx<gridRes; gx++){
-            const ox = startX + gx*cellW, oy = startY + gy*cellH;
-            const dx = ox - mouse.x, dy = oy - mouse.y;
-            const dist = Math.hypot(dx, dy) + 1e-4;
-            if (dist > maxEffect){ ctx.fillRect(ox - cellW/2, oy - cellH/2, cellW, cellH); continue; }
-            const t = dist / maxEffect, focus = 1 - t;
-            const baseTheta = focus*focus*(0.95*Math.max(0.35,distortionAmount));
-            const cross = mouse.vx*dy - mouse.vy*dx;
-            const theta = baseTheta * (cross>=0 ? 1 : -1);
-            const cos = Math.cos(theta), sin = Math.sin(theta);
-            let rx = cos*dx - sin*dy, ry = sin*dx + cos*dy;
-            const radialGain = 1 + focus*focus*(1.05 + 1.25*distortionAmount);
-            rx *= radialGain; ry *= radialGain;
-            const nx = mouse.x + rx, ny = mouse.y + ry;
-            if (Math.hypot(nx-mouse.x, ny-mouse.y) < hole) continue;
-            const scale = Math.max(0.25, Math.min(1, 1 - focus*(0.75 + 0.5*distortionAmount)));
-            ctx.save(); ctx.translate(nx, ny); ctx.scale(scale, scale);
-            ctx.fillRect(-cellW/2, -cellH/2, cellW, cellH); ctx.restore();
+    if (distortionAmount > 0 && mouse.active) {
+      const gridRes = 32;
+      const cellW = SIZE / gridRes;
+      const cellH = SIZE / gridRes;
+      const startX = CX - SIZE/2 + cellW/2;
+      const startY = CY - SIZE/2 + cellH/2;
+
+      const maxEffect = SIZE * 0.80;
+      const baseHole  = Math.max(12 * DPR, SIZE * 0.12);
+      const hole      = baseHole + distortionAmount * SIZE * 0.10;
+
+      for (let gy = 0; gy < gridRes; gy++) {
+        for (let gx = 0; gx < gridRes; gx++) {
+          const ox = startX + gx * cellW;
+          const oy = startY + gy * cellH;
+
+          const dx = ox - mouse.x;
+          const dy = oy - mouse.y;
+          const dist = Math.hypot(dx, dy) + 1e-4;
+
+          if (dist > maxEffect) {
+            // snap normal cells too
+            drawCellSnapped(ox, oy, cellW, cellH);
+            continue;
           }
+
+          const t = dist / maxEffect;
+          const focus = 1 - t;
+
+          const baseTheta = focus * focus * (0.95 * Math.max(0.35, distortionAmount));
+          const cross = mouse.vx * dy - mouse.vy * dx;
+          const theta = baseTheta * (cross >= 0 ? 1 : -1);
+
+          const cos = Math.cos(theta), sin = Math.sin(theta);
+          let rx = cos * dx - sin * dy;
+          let ry = sin * dx + cos * dy;
+
+          const radialGain = 1 + focus * focus * (1.05 + 1.25 * distortionAmount);
+          rx *= radialGain; ry *= radialGain;
+
+          const nx = mouse.x + rx;
+          const ny = mouse.y + ry;
+
+          if (Math.hypot(nx - mouse.x, ny - mouse.y) < hole) continue;
+
+          const scale = Math.max(0.25, Math.min(1, 1 - focus * (0.75 + 0.5 * distortionAmount)));
+          const w = cellW * scale;
+          const h = cellH * scale;
+
+          // draw cell at its FINAL pixel rect (no transforms) with a 1px overdraw inside helper
+          drawCellSnapped(nx, ny, w, h);
         }
-      } else {
-        ctx.fillRect(CX - SIZE/2, CY - SIZE/2, SIZE, SIZE);
       }
-      ctx.restore();
     } else {
-      ctx.fillStyle = '#111';
-      for (const p of particles){
-        if (p.disappeared) continue;
-        let opacity = 1;
-        if (p.flying && p.targetButton){
-          const dx = p.targetButton.x - p.x, dy = p.targetButton.y - p.y;
-          const dist = Math.hypot(dx, dy);
-          opacity = Math.max(0, Math.min(1, dist / (30 * DPR)));
-        }
-        if (opacity > 0){
-          ctx.save(); ctx.globalAlpha = opacity;
-          const s = CELL * 0.8; ctx.fillRect(Math.round(p.x - s/2), Math.round(p.y - s/2), Math.ceil(s), Math.ceil(s));
-          ctx.restore();
-        }
+      // normal solid cube — snapped to pixels for crisp edges
+      const x = Math.round(CX - SIZE/2);
+      const y = Math.round(CY - SIZE/2);
+      const s = Math.ceil(SIZE) + 1; // slight overdraw
+      ctx.fillRect(x, y, s, s);
+    }
+
+    ctx.restore();
+  } else {
+    // Particles flying to buttons (keep snapped/overdraw too)
+    ctx.fillStyle = '#111111';
+    for (const p of particles) {
+      if (p.disappeared) continue;
+
+      let opacity = 1;
+      if (p.flying && p.targetButton) {
+        const dx = p.targetButton.x - p.x;
+        const dy = p.targetButton.y - p.y;
+        const dist = Math.hypot(dx, dy);
+        opacity = Math.max(0, Math.min(1, dist / (30 * DPR)));
+      }
+
+      if (opacity > 0) {
+        const s = Math.ceil(CELL * 0.8) + 1; // +1px to kill seams
+        const x = Math.round(p.x - s/2);
+        const y = Math.round(p.y - s/2);
+        if (opacity !== 1) ctx.globalAlpha = opacity;
+        ctx.fillRect(x, y, s, s);
+        if (opacity !== 1) ctx.globalAlpha = 1;
       }
     }
   }
+}
+
 
   function frame(now){
     const dt = Math.min(60, now - last); last = now; step(dt); draw(); requestAnimationFrame(frame);
