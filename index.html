@@ -11,6 +11,7 @@
   <script defer src="assets/js/main.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <script defer src="assets/js/particles-config.js"></script>
+  <script defer src="assets/js/TechTree.js"></script>
 </head>
 <body>
   <div id="particles-js"></div>
@@ -29,7 +30,7 @@
   <main>
     <!-- Invisible white-on-white logo that darkens locally near the cursor -->
     <div id="logo-reveal" class="logo-reveal" aria-hidden="true">
-      <svg id="stayreal-logo" viewBox="0 0 1200 240" preserveAspectRatio="xMidYMid meet">
+      <svg id="stayreal-logo" viewBox="0 0 2000 600" preserveAspectRatio="xMidYMid meet" overflow="visible" style="transform: translateX(-200px);">
         <defs>
           <!-- Feathered circular mask that GSAP moves and scales -->
           <filter id="mask-blur" x="-50%" y="-50%" width="200%" height="200%">
@@ -40,7 +41,7 @@
             <rect width="100%" height="100%" fill="black" />
             <!-- Soft white spot to reveal locally near the cursor -->
             <g filter="url(#mask-blur)">
-              <circle id="revealCore" cx="600" cy="120" r="40" fill="white"/>
+              <circle id="revealCore" cx="1000" cy="300" r="40" fill="white"/>
             </g>
           </mask>
         </defs>
@@ -53,9 +54,9 @@
                 fill="#111"
                 font-family="'Outfit', system-ui, -apple-system, sans-serif"
                 font-weight="900"
-                font-size="150"
-                letter-spacing="0.15em">
-            STAY REAL
+                font-size="304"
+                letter-spacing="0.10em">
+            STAY REAL.
           </text>
         </g>
       </svg>
@@ -66,135 +67,465 @@
 
     <!-- TechTree overlay (vanilla JS implementation of the provided component) -->
     <div id="tech-tree" class="tech-tree" aria-hidden="true"></div>
-    <!-- Spacer to allow scroll progress for TechTree animation -->
-    <div class="scroll-spacer" aria-hidden="true"></div>
+    <!-- End-of-page CTA -->
+    <div class="cta-wrap">
+      <a class="cta-hire" href="contact/">Hire me</a>
+    </div>
   </main>
 
   <footer>
     © <span id="year"></span> Alex Shvachko — Stay Real.
   </footer>
   <style>
-    .tech-tree{ position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 2; }
-    .tech-tree svg{ position:absolute; inset:0; width:100%; height:100%; }
+    /* Make all text non-selectable on the home page only */
+    body { 
+      -webkit-user-select: none; 
+      -ms-user-select: none; 
+      user-select: none; 
+      margin: 0;
+      padding: 0;
+    }
+    
+    /* TechTree styles */
+    .tech-tree-container {
+      position: relative;
+      width: 100%;
+      min-height: 180vh;  /* Increased to match JS container */
+      margin: 2rem 0;
+      padding-bottom: 8rem;  /* More padding at bottom */
+      pointer-events: none;
+      z-index: 1;
+      overflow: visible;
+    }
+    
+    .tech-tree-container svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+    
     /* provides scroll distance so the TechTree can reveal */
-    .scroll-spacer{ height: 180vh; }
+    .scroll-spacer { 
+      height: 200vh;  /* Increased to ensure enough scroll space */
+      position: relative;
+      z-index: -1;
+      margin-bottom: -1px;  /* Fix potential gap */
+    }
+    
+    /* CTA near the end of the tree */
+    .cta-wrap {
+      position: fixed;
+      bottom: 40px;
+      left: 0;
+      right: 0;
+    }
+    .cta-hire {
+      display: inline-block; 
+      text-decoration: none; 
+      font-weight: 700; 
+      letter-spacing: 0.02em;
+      background: #111; 
+      color: #fff; 
+      border-radius: 999px; 
+      padding: 14px 24px; 
+      border: 1px solid rgba(0,0,0,0.85);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+      transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
+    }
+    
+    .cta-hire:hover { 
+      transform: translateY(-1px); 
+      box-shadow: 0 10px 24px rgba(0,0,0,0.18); 
+    }
+    
+    .cta-hire:active { 
+      transform: translateY(0); 
+    }
   </style>
   <script>
     (function(){
       const skills = [
-        { name: 'Python', side: 'left' },
-        { name: 'SQL · PostgreSQL', side: 'right' },
-        { name: 'Apache Spark', side: 'left' },
-        { name: 'Apache Kafka', side: 'right' },
-        { name: 'Apache Airflow', side: 'left' },
-        { name: 'Docker', side: 'right' },
-        { name: 'Kubernetes', side: 'left' },
-        { name: 'Snowflake', side: 'right' },
-        { name: 'dbt', side: 'left' },
-        { name: 'Terraform', side: 'right' },
-        { name: 'AWS · GCP', side: 'left' },
-        { name: 'Pandas · NumPy', side: 'right' },
+        { name: 'LLM-Powered Automation', side: 'left' },
+        { name: 'Advanced SQL & Data Modeling', side: 'right' },
+        { name: 'Agentic Workflows', side: 'left' },
+        { name: 'ETL & Data Warehousing', side: 'right' },
+        { name: 'Generative Media & Prompt Engineering', side: 'left' },
+        { name: 'Big Data Processing', side: 'right' },
+        { name: 'Time-Series & Longitudinal Data', side: 'left' },
+        { name: 'Backend & APIs', side: 'right' },
+        { name: 'Vector Search & Text Embeddings', side: 'left' },
+        { name: 'Cloud & DevOps', side: 'right' },
+        { name: 'Cost-Aware Data Platform Design', side: 'left' },
+        { name: 'Dashboards & Analytics', side: 'right' },
       ];
 
       const container = document.getElementById('tech-tree');
       const svgNS = 'http://www.w3.org/2000/svg';
       const svg = document.createElementNS(svgNS, 'svg');
-      svg.setAttribute('viewBox','0 0 100 100');
+      
+      // Dynamic viewBox based on number of skills
+      const VIEWBOX_WIDTH = 100;
+      const VIEWBOX_HEIGHT = 100 + (skills.length * 8); // Dynamic height based on skills count
+      svg.setAttribute('viewBox', `0 0 ${VIEWBOX_WIDTH} ${VIEWBOX_HEIGHT}`);
+      svg.setAttribute('preserveAspectRatio', 'xMidYMin meet');
 
-      // trunk
+      // Create a group for the tree that we can position
+      const treeGroup = document.createElementNS(svgNS, 'g');
+      treeGroup.setAttribute('class', 'tech-tree-group');
+      
+      // Create a subtle grid background for the tree
+      const gridGroup = document.createElementNS(svgNS, 'g');
+      gridGroup.setAttribute('class', 'tech-tree-grid');
+      gridGroup.setAttribute('opacity', '0.1');
+      
+      // Add vertical grid lines
+      for (let x = 10; x < VIEWBOX_WIDTH; x += 10) {
+        const line = document.createElementNS(svgNS, 'line');
+        line.setAttribute('x1', x);
+        line.setAttribute('y1', '0');
+        line.setAttribute('x2', x);
+        line.setAttribute('y2', VIEWBOX_HEIGHT);
+        line.setAttribute('stroke', '#000');
+        line.setAttribute('stroke-width', '0.2');
+        gridGroup.appendChild(line);
+      }
+      
+      // Add horizontal grid lines
+      for (let y = 10; y < VIEWBOX_HEIGHT; y += 10) {
+        const line = document.createElementNS(svgNS, 'line');
+        line.setAttribute('x1', '0');
+        line.setAttribute('y1', y);
+        line.setAttribute('x2', VIEWBOX_WIDTH);
+        line.setAttribute('y2', y);
+        line.setAttribute('stroke', '#000');
+        line.setAttribute('stroke-width', '0.2');
+        gridGroup.appendChild(line);
+      }
+      
+      treeGroup.appendChild(gridGroup);
+
+      // trunk - dynamic height based on content
+      const trunkStartY = 10;
+      const trunkEndY = VIEWBOX_HEIGHT - 10;
+      const trunkX = VIEWBOX_WIDTH / 2;
+      
       const trunk = document.createElementNS(svgNS, 'path');
-      trunk.setAttribute('d','M50 5 L50 85');
-      trunk.setAttribute('stroke','#000000');
-      trunk.setAttribute('stroke-width','0.6');
-      trunk.setAttribute('fill','none');
-      trunk.setAttribute('stroke-linecap','round');
-      trunk.style.strokeDasharray = 80;
-      trunk.style.strokeDashoffset = 80;
-      svg.appendChild(trunk);
+      trunk.setAttribute('d', `M${trunkX} ${trunkStartY} L${trunkX} ${trunkEndY}`);
+      trunk.setAttribute('class', 'tech-tree-trunk');
+      trunk.setAttribute('stroke', '#000000');
+      trunk.setAttribute('stroke-width', '0.6');
+      trunk.setAttribute('fill', 'none');
+      trunk.setAttribute('stroke-linecap', 'round');
+      trunk.style.strokeDasharray = trunkEndY - trunkStartY;
+      trunk.style.strokeDashoffset = trunkEndY - trunkStartY;
+      treeGroup.appendChild(trunk);
 
       // branches + chips
       const items = [];
+      const branchSpacing = (trunkEndY - trunkStartY) / (skills.length + 1);
+      
       skills.forEach((skill, index) => {
-        const yPos = 15 + index * 5.5;
+        // Calculate y position dynamically based on index and spacing
+        const yPos = trunkStartY + ((index + 1) * branchSpacing);
         const isLeft = skill.side === 'left';
         const branchEndX = isLeft ? 15 : 85;
-        const chipX = isLeft ? 2 : 76;
-
+        
+        // Base chip dimensions - will be adjusted for text
+        const CHIP_H = 5.4;
+        const CHIP_RX = 2.7;
+        // Create temporary text element to measure width
+        const tempText = document.createElementNS(svgNS, 'text');
+        tempText.setAttribute('x', '0');
+        tempText.setAttribute('y', '0');
+        tempText.setAttribute('font-size', '1.95');
+        tempText.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
+        tempText.textContent = skill.name;
+        svg.appendChild(tempText);
+        const textBBox = tempText.getBBox();
+        svg.removeChild(tempText);
+        
+        // Calculate chip width based on text width + padding
+        const TEXT_PADDING = 8; // Horizontal padding in viewBox units
+        const MIN_CHIP_WIDTH = 30; // Minimum chip width
+        const CHIP_WIDTH = Math.max(MIN_CHIP_WIDTH, textBBox.width + TEXT_PADDING);
+        
+        // Position chip based on side
+        const chipX = isLeft ? 2 : (VIEWBOX_WIDTH - CHIP_WIDTH - 2);
+        
         const g = document.createElementNS(svgNS, 'g');
+        g.setAttribute('class', `skill-branch ${isLeft ? 'left' : 'right'}`);
 
+        // Create elbowed branch path with dynamic curve
         const branch = document.createElementNS(svgNS, 'path');
-        branch.setAttribute('d', `M50 ${yPos} L${branchEndX} ${yPos}`);
-        branch.setAttribute('stroke','#000000');
-        branch.setAttribute('stroke-width','0.3');
-        branch.setAttribute('fill','none');
-        branch.setAttribute('stroke-linecap','round');
-        branch.style.strokeDasharray = 35;
-        branch.style.strokeDashoffset = 35;
+        const midX = isLeft ? 35 : 65; // Control point for the curve
+        const curveOffset = 3; // Vertical curve offset
+        branch.setAttribute('d', `M${trunkX} ${yPos} C${midX} ${yPos - curveOffset}, ${midX} ${yPos}, ${isLeft ? 15 : 85} ${yPos}`);
+        branch.setAttribute('class', 'branch-path');
+        branch.setAttribute('stroke', '#000000');
+        branch.setAttribute('stroke-width', '0.3');
+        branch.setAttribute('fill', 'none');
+        branch.setAttribute('stroke-linecap', 'round');
+        branch.style.strokeDasharray = '0'; // Will be updated after render
+        branch.style.strokeDashoffset = '0';
 
+        // Create branch connection point with hover effect
         const dot = document.createElementNS(svgNS, 'circle');
-        dot.setAttribute('cx','50');
+        dot.setAttribute('cx', String(trunkX));
         dot.setAttribute('cy', String(yPos));
-        dot.setAttribute('r','0.4');
-        dot.setAttribute('fill','#000000');
-        dot.style.opacity = 0;
-
+        dot.setAttribute('r', '0.6');
+        dot.setAttribute('class', 'branch-dot');
+        dot.setAttribute('fill', '#000000');
+        dot.style.opacity = '0';
+        
+        // Add decorative circuit elements
+        if (index % 2 === 0) {
+          const decor = document.createElementNS(svgNS, 'circle');
+          decor.setAttribute('cx', String(trunkX + (isLeft ? -2 : 2)));
+          decor.setAttribute('cy', String(yPos + (isLeft ? -2 : 2)));
+          decor.setAttribute('r', '0.8');
+          decor.setAttribute('fill', 'none');
+          decor.setAttribute('stroke', '#666');
+          decor.setAttribute('stroke-width', '0.15');
+          decor.setAttribute('opacity', '0');
+          decor.setAttribute('class', 'circuit-decor');
+          g.appendChild(decor);
+        }
+        
         const chipGroup = document.createElementNS(svgNS, 'g');
-        chipGroup.style.opacity = 0;
+        chipGroup.setAttribute('class', 'chip-group');
+        chipGroup.style.opacity = '0';
 
-        const rect = document.createElementNS(svgNS, 'rect');
-        rect.setAttribute('x', String(chipX));
-        rect.setAttribute('y', String(yPos - 1.8));
-        rect.setAttribute('width','22');
-        rect.setAttribute('height','3.6');
-        rect.setAttribute('rx','1.8');
-        rect.setAttribute('fill','#000000');
-        rect.setAttribute('stroke','#000000');
-        rect.setAttribute('stroke-width','0.1');
+        // Create chip background with subtle gradient
+        const chipBg = document.createElementNS(svgNS, 'rect');
+        chipBg.setAttribute('x', String(chipX));
+        chipBg.setAttribute('y', String(yPos - CHIP_H/2));
+        chipBg.setAttribute('width', String(CHIP_WIDTH));
+        chipBg.setAttribute('height', String(CHIP_H));
+        chipBg.setAttribute('rx', String(CHIP_RX));
+        chipBg.setAttribute('fill', 'url(#chipGradient)');
+        chipBg.setAttribute('stroke', '#333');
+        chipBg.setAttribute('stroke-width', '0.1');
+        
+        // Add subtle highlight to chip
+        const chipHighlight = document.createElementNS(svgNS, 'rect');
+        chipHighlight.setAttribute('x', String(chipX + 0.5));
+        chipHighlight.setAttribute('y', String(yPos - CHIP_H/2 + 0.5));
+        chipHighlight.setAttribute('width', String(CHIP_WIDTH - 1));
+        chipHighlight.setAttribute('height', String(CHIP_H/2 - 0.5));
+        chipHighlight.setAttribute('rx', String(CHIP_RX - 0.5));
+        chipHighlight.setAttribute('fill', 'white');
+        chipHighlight.setAttribute('opacity', '0.1');
 
         const text = document.createElementNS(svgNS, 'text');
-        text.setAttribute('x', String(chipX + 11));
-        text.setAttribute('y', String(yPos + 0.4));
-        text.setAttribute('text-anchor','middle');
-        text.setAttribute('font-size','1.3');
-        text.setAttribute('fill','#ffffff');
-        text.setAttribute('font-family','system-ui, -apple-system, sans-serif');
-        text.setAttribute('font-weight','600');
+        text.setAttribute('x', String(chipX + CHIP_WIDTH/2));
+        text.setAttribute('y', String(yPos + 0.5));
+        text.setAttribute('text-anchor', 'middle');
+        text.setAttribute('dominant-baseline', 'middle');
+        text.setAttribute('font-size', '1.95');
+        text.setAttribute('fill', '#ffffff');
+        text.setAttribute('font-family', 'system-ui, -apple-system, sans-serif');
+        text.setAttribute('font-weight', '600');
+        text.setAttribute('letter-spacing', '0.02em');
         text.textContent = skill.name;
 
-        chipGroup.appendChild(rect);
+        // Add all elements to their respective groups
+        chipGroup.appendChild(chipBg);
+        chipGroup.appendChild(chipHighlight);
         chipGroup.appendChild(text);
-
+        
+        // Add branch elements to the group
         g.appendChild(branch);
         g.appendChild(dot);
         g.appendChild(chipGroup);
-        svg.appendChild(g);
-
-        items.push({ yPos, branch, dot, chipGroup, index });
+        
+        // Add the group to the tree
+        treeGroup.appendChild(g);
+        
+        // Store references for animation
+        items.push({
+          yPos, 
+          branch, 
+          dot, 
+          chipGroup, 
+          index,
+          decor: g.querySelector('.circuit-decor')
+        });
       });
-
-      container.appendChild(svg);
-
-      // scroll animation
-      function onScroll(){
+      
+      // Gradient definition for chips
+      const defs = document.createElementNS(svgNS, 'defs');
+      const gradient = document.createElementNS(svgNS, 'linearGradient');
+      gradient.setAttribute('id', 'chipGradient');
+      gradient.setAttribute('x1', '0%');
+      gradient.setAttribute('y1', '0%');
+      gradient.setAttribute('x2', '0%');
+      gradient.setAttribute('y2', '100%');
+      
+      const stop1 = document.createElementNS(svgNS, 'stop');
+      stop1.setAttribute('offset', '0%');
+      stop1.setAttribute('stop-color', '#333');
+      
+      const stop2 = document.createElementNS(svgNS, 'stop');
+      stop2.setAttribute('offset', '100%');
+      stop2.setAttribute('stop-color', '#111');
+      
+      gradient.appendChild(stop1);
+      gradient.appendChild(stop2);
+      defs.appendChild(gradient);
+      svg.insertBefore(defs, svg.firstChild);
+      
+      // Add styles for better visual hierarchy
+      const style = document.createElementNS(svgNS, 'style');
+      style.textContent = `
+        .branch-path { stroke-linecap: round; stroke-linejoin: round; }
+        .branch-dot { transition: r 0.2s ease, opacity 0.3s ease; }
+        .branch-dot:hover { r: 0.9; }
+        .chip-group { transition: opacity 0.4s ease, transform 0.4s ease; }
+        .circuit-decor { transition: opacity 0.5s ease 0.2s; }
+      `;
+      defs.appendChild(style);
+      
+      // Add tree group to SVG after all elements are created
+      svg.appendChild(treeGroup);
+      
+      // Calculate total animation duration based on number of skills
+      function onScroll() {
         const scrollTop = window.scrollY;
         const docHeight = document.documentElement.scrollHeight - window.innerHeight;
         const progress = docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0;
-        const treeHeight = Math.min(progress * 90, 85);
-        trunk.style.strokeDashoffset = 80 - treeHeight;
-
-        items.forEach(({ yPos, branch, dot, chipGroup, index }) => {
-          const branchProgress = Math.max(0, (progress - (index * 0.05 + 0.2)) * 3);
-          const dash = Math.max(0, 35 - branchProgress * 35);
-          branch.style.strokeDashoffset = dash;
-          dot.style.opacity = Math.min(1, branchProgress);
-          const opacity = Math.max(0, branchProgress - 0.3);
-          chipGroup.style.opacity = opacity;
-          const translateY = Math.max(0, (1 - branchProgress) * 2);
-          chipGroup.style.transform = `translateY(${translateY}px)`;
+        
+        // Update trunk reveal
+        trunk.style.strokeDashoffset = (trunkEndY - trunkStartY) * (1 - progress);
+        
+        // Dynamic timing based on number of skills
+        const totalSkills = skills.length;
+        const startThreshold = 0.05; // Start revealing branches after 5% scroll
+        const endThreshold = 0.9; // Finish revealing by 90% scroll
+        const availableScroll = endThreshold - startThreshold;
+        const step = availableScroll / (totalSkills * 1.2); // Add some spacing between reveals
+        
+        items.forEach(({ yPos, branch, dot, chipGroup, decor, index }) => {
+          // Staggered start times for each branch
+          const branchStart = startThreshold + (index * step);
+          const branchEnd = branchStart + (step * 2);
+          
+          // Calculate branch progress (0 to 1)
+          let branchProgress = 0;
+          if (progress > branchStart) {
+            branchProgress = Math.min(1, (progress - branchStart) / (branchEnd - branchStart));
+          }
+          
+          // Update branch path animation
+          if (branch) {
+            const pathLength = branch.getTotalLength ? branch.getTotalLength() : 50;
+            branch.style.strokeDasharray = pathLength;
+            branch.style.strokeDashoffset = pathLength * (1 - branchProgress);
+          }
+          
+          // Update dot and chip group
+          if (dot) {
+            dot.style.opacity = Math.min(1, branchProgress * 1.5);
+          }
+          
+          if (chipGroup) {
+            chipGroup.style.opacity = Math.min(1, branchProgress * 1.2);
+            const translateY = (1 - branchProgress) * 4;
+            chipGroup.style.transform = `translateY(${translateY}px)`;
+          }
+          
+          // Animate decorative elements
+          if (decor) {
+            decor.style.opacity = branchProgress > 0.5 ? '0.3' : '0';
+          }
         });
       }
       window.addEventListener('scroll', onScroll, { passive: true });
       onScroll();
+
+      // Position the tech tree relative to its container
+      const techTree = document.getElementById('tech-tree');
+      const treeContainer = document.createElement('div');
+      treeContainer.className = 'tech-tree-container';
+      techTree.parentNode.insertBefore(treeContainer, techTree);
+      treeContainer.appendChild(techTree);
+      
+      // Style the container
+      Object.assign(treeContainer.style, {
+        position: 'relative',
+        width: '100%',
+        height: '200vh', // Will be adjusted
+        pointerEvents: 'none'
+      });
+      
+      // Style the SVG to be centered and responsive
+      Object.assign(techTree.style, {
+        position: 'absolute',
+        top: '0',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '100%',
+        maxWidth: '800px',
+        height: '100%',
+        pointerEvents: 'none'
+      });
+      
+      // Position the tree container after the bio section
+      function positionTree() {
+        if (!bioEl || !techTree) return;
+        
+        // Get the position after the bio section
+        const bioRect = bioEl.getBoundingClientRect();
+        const bioBottom = bioRect.bottom + window.scrollY;
+        
+        // Position the tree container
+        treeContainer.style.marginTop = '100px'; // Space after bio
+        
+        // Set initial height (will be adjusted by scroll handler)
+        const minHeight = window.innerHeight * 1.5; // At least 1.5 viewport heights
+        treeContainer.style.height = `${minHeight}px`;
+        
+        // Update scroll handler to pin the tree while scrolling
+        updateScroll();
+      }
+      
+      // Handle scroll and resize events
+      function updateScroll() {
+        if (!treeContainer || !techTree) return;
+        
+        const containerRect = treeContainer.getBoundingClientRect();
+        const containerTop = containerRect.top + window.scrollY;
+        const containerBottom = containerTop + containerRect.height;
+        const viewportHeight = window.innerHeight;
+        
+        // Calculate scroll progress through the tree container
+        let scrollProgress = 0;
+        if (viewportHeight < containerRect.height) {
+          const scrollY = window.scrollY;
+          const scrollStart = containerTop - viewportHeight * 0.5;
+          const scrollEnd = containerBottom - viewportHeight * 0.5;
+          scrollProgress = Math.max(0, Math.min(1, (scrollY - scrollStart) / (scrollEnd - scrollStart)));
+        }
+        
+        // Update the tree animation
+        onScroll();
+      }
+      
+      // Set up event listeners
+      window.addEventListener('resize', positionTree);
+      window.addEventListener('scroll', updateScroll, { passive: true });
+      
+      // Initial positioning
+      const bioEl = document.querySelector('.bio');
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', positionTree);
+      } else {
+        positionTree();
+      }
+      
+      // Initial scroll update
+      updateScroll();
     })();
   </script>
 </body>

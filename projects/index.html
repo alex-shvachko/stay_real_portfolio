@@ -182,17 +182,93 @@
     let transformComplete = false;
     let distortionAmount = 0;
 
-  const buttonLabels = [
-    'Data Science','Machine Learning','Data Engineering',
-    'Automations','AI Engineering','AI Art'
-  ];
+  const projects = {
+    'Data Science': {
+      title: 'Ambulances at the Door: Predicting ER Off-Load Delays (Israel, 2022)',
+      content: `
+        <h2>Backstory</h2>
+        <p>Ambulances were arriving to ERs and waiting on stretchers because no bed was immediately available. That delay cascades: worse patient experience, staff overload, and lower system throughput. I set out to measure the problem end-to-end and predict delays so dispatchers and ERs can act before bottlenecks form.</p>
+        
+        <h2>Data & Label</h2>
+        <p>436,7k+ ambulance→ER entries (2022, nationwide) with timestamps, location, patient age, clinical code, arrival hour, ER load proxies, and more.</p>
+        <p>Engineered features: hospital size & region, shift (day/evening/night), simultaneous ambulance arrivals, and current ER occupancy proxy.</p>
+        <p>Delay definition ("bottleneck") followed operational rules: ≥20 min for BLS, ≥30 min for ALS/paramedic off-load.</p>
+        <p><strong>Fun (scary) fact:</strong> mean wait ≈ 36.2 min, and ~79.5% of arrivals met the "delayed" threshold—so this is systemic, not anecdotal.</p>
+        
+        <h2>Approach</h2>
+        <p>Cleaning + feature engineering; categorical encoding & normalization; train/valid splits with cross-validation.</p>
+        <p>Tried logistic regression; moved to Random Forest to capture non-linear interactions and mixed feature types.</p>
+        <p>Imputation and sanity checks for extreme ages/outliers; visual analysis of seasonality & hourly patterns.</p>
+        
+        <h2>Results (Classifier)</h2>
+        <p>Optimized for high recall (better to flag potential delays than miss them):</p>
+        <p>Test F1: 0.885 Precision: 0.801 Recall: 0.989<br>
+        Accuracy: 0.797 Specificity: 0.055 (expected tradeoff)<br>
+        ROC-AUC: 0.692 (room to lift with richer real-time features)</p>
+        <p><em>Translation:</em> the model catches almost all delay cases; it intentionally over-alerts when capacity is tight. (Threshold can be tuned per hospital.)</p>
+        
+        <h2>What drives delay (feature importance)</h2>
+        <ul>
+          <li>Patient age—older patients increase off-load time (bed type/triage complexity).</li>
+          <li>ER occupancy % at arrival—the denser the unit, the slower the handoff.</li>
+          <li>Arrival hour/shift and simultaneous ambulance load—crowding effects.</li>
+          <li>Clinical code (chief complaint)—certain cases require more prep.</li>
+          <li>Geography/facility size and crew/base metadata—local operating patterns.</li>
+        </ul>
+        
+        <h2>Key Insights (operational)</h2>
+        <ul>
+          <li>Capacity, not paperwork, is the bottleneck. Delay tracks ER occupancy and batch arrivals.</li>
+          <li>Routing beats waiting. Steering borderline cases to nearby, less-crowded ERs should reduce queueing.</li>
+          <li>Age-aware triage prep (bed readiness before wheels-stop) can cut minutes where it matters most.</li>
+          <li>Seasonality & time-of-day patterns are real; staff scheduling can be aligned to predicted peaks.</li>
+        </ul>
+        
+        <h2>Challenges</h2>
+        <ul>
+          <li>Single-year view (2022)—good for a first pass, but more years would solidify seasonality trends.</li>
+          <li>Timing discrepancies between EMS and hospital clocks; imperfect visibility into exact "bed ready" state.</li>
+          <li>Label imbalance (many "delays") pushes the model toward recall; specificity is low by design and needs per-site thresholding.</li>
+          <li>Limited direct signals about real-time bed availability and triage severity at minute-resolution.</li>
+        </ul>
+        
+        <h2>What I'd Build Next (practical roadmap)</h2>
+        <ul>
+          <li>Per-hospital threshold calibration (precision–recall tradeoff by ops goals).</li>
+          <li>Live occupancy feed + streaming features → upgrade to online inference and ETA-aware dispatch.</li>
+          <li>Cost-sensitive learning (missed-delay > false-alarm) and XGBoost/GBTs with calibrated probabilities.</li>
+          <li>Tactical dashboard for dispatchers: recommended destination + predicted off-load time + confidence band.</li>
+          <li>A/B test: dynamic routing versus status-quo during peak windows.</li>
+        </ul>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+          <img src="../assets/img/er.png" alt="ER Off-Load Delay Analysis" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        </div>
+      `
+    },
+    'Machine Learning': { title: 'Machine Learning Project', content: 'Coming soon...' },
+    'Data Engineering': { title: 'Data Engineering Project', content: 'Coming soon...' },
+    'Automations': { title: 'Automations Project', content: 'Coming soon...' },
+    'AI Engineering': { title: 'AI Engineering Project', content: 'Coming soon...' },
+    'AI Art': { title: 'AI Art Project', content: 'Coming soon...' }
+  };
+  
+  const buttonLabels = Object.keys(projects);
   let buttons = [];
   const particles = [];
 
   const mouse = {x:0, y:0, active:false, vx:0, vy:0, px:0, py:0};
 
   // ----- Modal helpers -----
-  function openModal(){ modalEl.classList.add('visible'); modalEl.setAttribute('aria-hidden','false'); }
+  function openModal(projectTitle) {
+    const project = projects[projectTitle];
+    if (project) {
+      document.getElementById('modalTitle').textContent = project.title;
+      document.querySelector('.modal-body').innerHTML = project.content;
+      modalEl.classList.add('visible');
+      modalEl.setAttribute('aria-hidden', 'false');
+    }
+  }
   function closeModal(){ modalEl.classList.remove('visible'); modalEl.setAttribute('aria-hidden','true'); }
   modalClose.addEventListener('click', closeModal);
   modalEl.addEventListener('click', (e)=>{ if (e.target === modalEl) closeModal(); });
@@ -296,7 +372,7 @@
         btn.classList.add('lit');
         setTimeout(() => btn.classList.remove('lit'), 450);
       });
-      btn.addEventListener('click', openModal);
+      btn.addEventListener('click', () => openModal(label));
       buttons.push({ element: btn, x, y, angle, radius });
     });
   }

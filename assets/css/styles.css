@@ -317,8 +317,8 @@ footer{
 
 /* Invisible logo wrapper */
 .logo-reveal{
-  width: min(880px, 92vw);
-  height: clamp(100px, 16vw, 180px);
+  width: min(1400px, 96vw);
+  height: min(60vh, 520px);
   margin: 32px auto 8px;
   display: grid;
   place-items: center;
