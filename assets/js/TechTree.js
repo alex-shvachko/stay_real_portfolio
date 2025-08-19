@@ -98,6 +98,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const chipGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     chipGroup.style.opacity = '0';
     chipGroup.style.transform = 'translateY(4px)';
+    chipGroup.style.transformBox = 'fill-box';
+    chipGroup.style.transformOrigin = '50% 50%';
     
     // Create chip background
     const chipBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
