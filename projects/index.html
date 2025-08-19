@@ -6,14 +6,28 @@
   <title>Projects — Stay Real</title>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/css/styles.css">
   <style>
-    body{margin:0; background:#ffffff; color:#111; overflow:hidden;
+    body{
+      margin:0;
+      color:#111;
       font-family: 'Outfit', system-ui, -apple-system, sans-serif;
-      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;}
-    canvas#stage{position:fixed; inset:0; width:100vw; height:100vh; display:block; z-index:1;}
+      -webkit-font-smoothing:antialiased; 
+      text-rendering:optimizeLegibility;
+      overflow: hidden; /* Keep overflow hidden for this specific page's animation */
+    }
+    canvas#stage{
+      position:fixed; 
+      inset:0; 
+      width:100vw; 
+      height:100vh; 
+      display:block; 
+      z-index: 1; /* Behind other content */
+      background: transparent;
+    }
     .hint{position:fixed; left:50%; bottom:26px; transform:translateX(-50%);
       background:rgba(0,0,0,.04); border:1px solid rgba(0,0,0,.07); color:#333;
-      padding:8px 12px; border-radius:12px; font-size:12px; letter-spacing:.2px; z-index:10;
+      padding:8px 12px; border-radius:12px; font-size:12px; letter-spacing:.2px; z-index:100;
       transition: opacity 0.3s ease;}
 
     .skill-button {
@@ -28,7 +42,7 @@
     }
     .skill-button.visible { opacity: 1; pointer-events: auto; scale: 1; }
 
-    .nav { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10; }
+    .nav { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 100; }
     .links { display: flex; gap: 12px; }
     .pill { padding: 8px 16px; background: rgba(255,255,255,0.9);
       border:1px solid rgba(0,0,0,0.1); border-radius:20px; text-decoration:none;
@@ -36,7 +50,7 @@
     .pill:hover { background: rgba(0,0,0,0.05); }
     .pill.active { background: #111; color: white; }
 
-    footer { position: fixed; bottom: 20px; right: 20px; font-size: 12px; color: rgba(0,0,0,0.6); z-index: 10; }
+    footer { position: fixed; bottom: 20px; right: 20px; font-size: 12px; color: rgba(0,0,0,0.6); z-index: 100; }
 
     /* Phrase lines (bigger + farther) */
     .phrase-line{
@@ -57,8 +71,11 @@
     }
     .phrase-line .segment.revealed{ opacity: 1; transform: translateY(0); }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script defer src="../assets/js/particles-config.js"></script>
 </head>
 <body>
+  <div id="particles-js"></div>
   <canvas id="stage" aria-label="Interactive cube particle field"></canvas>
   <div class="hint" id="hint">Move your cursor to the center to transform the cube • Tap center on mobile</div>
 
@@ -272,8 +289,8 @@
         const prox = Math.max(0, 1 - d / limit);
         const speed = Math.hypot(mouse.vx, mouse.vy);
         const speedBoost = Math.min(1, speed / (28 * DPR));
-        const target = Math.max(0, Math.min(1, prox * 0.9 + speedBoost * 0.35));
-        distortionAmount += (target - distortionAmount) * 0.15;
+        const target = Math.max(0, Math.min(1, (prox * 0.9 + speedBoost * 0.3) * 0.25));
+        distortionAmount += (target - distortionAmount) * 0.005;
       } else {
         distortionAmount *= 0.92;
       }

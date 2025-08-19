@@ -9,8 +9,11 @@
   <link rel="stylesheet" href="../assets/css/styles.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script defer src="../assets/js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script defer src="../assets/js/particles-config.js"></script>
 </head>
 <body>
+  <div id="particles-js"></div>
   <header>
     <nav class="nav" style="display: flex; justify-content: center; width: 100%;">
       <div class="links" style="justify-content: center;">
@@ -21,87 +24,152 @@
     </nav>
   </header>
   <style>
-    .services-scroll-container {
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      overflow: hidden;
-      padding: 40px 20px;
-      position: relative;
+    body,
+    html {
+      overflow-x: hidden;
+      /* Prevent horizontal scroll */
     }
-    .services-container {
-      display: flex;
-      gap: 30px;
-      width: max-content;
-      margin: 0 auto;
-      padding: 20px;
-      box-sizing: border-box;
-      -ms-overflow-style: none;  /* IE and Edge */
-      scrollbar-width: none;  /* Firefox */
-    }
-    .services-container::-webkit-scrollbar {
-      display: none;  /* Chrome, Safari and Opera */
-    }
-    .service-btn {
-      flex: 0 0 300px;
-      height: 400px;
-      position: relative;
-      border: none;
+
+    main {
+      height: 70vh;
+      /* Reduced height */
+      max-width: 1600px;
+      width: 95%;
+      margin: 4rem auto;
+      /* Added margin for separation */
       border-radius: 16px;
+      /* Rounded corners */
       overflow: hidden;
-      background: #f5f5f5;
+      /* Keep images contained */
+      display: flex;
+      position: relative;
+      z-index: 10;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      /* Added shadow for depth */
+    }
+
+    .service-column {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      transition: flex 0.7s ease-in-out;
       cursor: pointer;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .service-btn:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+
+    .service-column::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1;
+      transition: background 0.7s ease;
     }
-    .service-btn img {
+
+    .service-column img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.5s ease;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: transform 0.7s ease-in-out;
     }
-    .service-btn:hover img {
+
+    .service-content {
+      position: relative;
+      z-index: 2;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      padding: 2rem;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease-in-out 0.2s, transform 0.5s ease-in-out 0.2s;
+    }
+
+    .service-content h2 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+    }
+
+    .service-content p {
+      font-size: 1.1rem;
+      max-width: 400px;
+      text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    /* Hover states */
+    main:hover .service-column:not(:hover) {
+      flex: 1;
+    }
+
+    main:hover .service-column:hover {
+      flex: 3;
+    }
+
+    .service-column:hover::before {
+      background: rgba(0, 0, 0, 0.7);
+    }
+
+    .service-column:hover img {
       transform: scale(1.05);
     }
-    .service-btn span {
+
+    .service-column:hover .service-content {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Initial state text */
+    .service-title-initial {
       position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(0,0,0,0.7);
+      z-index: 2;
       color: white;
-      padding: 15px;
-      text-align: center;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 1.5rem;
       font-weight: 600;
-      font-size: 18px;
+      text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+      transition: opacity 0.5s ease;
     }
-    /* Hide scrollbar but keep functionality */
-    .services-scroll-container {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-    }
-    .services-scroll-container::-webkit-scrollbar {
-      display: none;
+
+    .service-column:hover .service-title-initial {
+      opacity: 0;
     }
   </style>
-  <main style="min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-    <div class="services-scroll-container">
-      <div class="services-container">
-        <button class="service-btn">
-          <img src="https://images.unsplash.com/photo-1522199710521-72d69614c702?auto=format&fit=crop&w=600&h=800&q=80" alt="Digital marketing">
-          <span>Digital marketing</span>
-        </button>
-        <button class="service-btn">
-          <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=600&h=800&q=80" alt="Personalized automations">
-          <span>Personalized automations</span>
-        </button>
-        <button class="service-btn">
-          <img src="https://images.unsplash.com/photo-1505373877841-8d25f96d553e?auto=format&fit=crop&w=600&h=800&q=80" alt="Personal Coaching">
-          <span>Personal Coaching</span>
-        </button>
+  <main>
+    <div class="service-column">
+      <img src="https://images.unsplash.com/photo-1522199710521-72d69614c702?auto=format&fit=crop&w=1200&h=800&q=80" alt="Digital marketing">
+      <div class="service-title-initial">Digital Marketing</div>
+      <div class="service-content">
+        <h2>Digital Marketing</h2>
+        <p>We craft data-driven strategies to boost your online presence, engage your audience, and drive conversions.</p>
+      </div>
+    </div>
+    <div class="service-column">
+      <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1200&h=800&q=80" alt="Personalized automations">
+      <div class="service-title-initial">Personalized Automations</div>
+      <div class="service-content">
+        <h2>Personalized Automations</h2>
+        <p>Streamline your workflows and increase efficiency with custom automations tailored to your business needs.</p>
+      </div>
+    </div>
+    <div class="service-column">
+      <img src="https://images.unsplash.com/photo-1505373877841-8d25f96d553e?auto=format&fit=crop&w=1200&h=800&q=80" alt="Personal Coaching">
+      <div class="service-title-initial">Personal Coaching</div>
+      <div class="service-content">
+        <h2>Personal Coaching</h2>
+        <p>Unlock your full potential with one-on-one coaching sessions designed to help you achieve your personal and professional goals.</p>
       </div>
     </div>
   </main>

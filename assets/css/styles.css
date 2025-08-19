@@ -44,13 +44,228 @@ main{
   max-width:600px;
   margin:20px auto;
 }
-.chatbox{
-  width:100%;
-  max-width:600px;
-  height:300px;
-  margin:40px auto;
-  border:1px solid rgba(0,0,0,0.1);
-  border-radius:12px;
+/* Chat Container */
+.chat-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 40px auto 0;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Chat Header */
+.chat-header {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.chat-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #4a6cf7;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  font-size: 16px;
+}
+
+.chat-title {
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.chat-status {
+  margin-left: auto;
+  font-size: 12px;
+  color: #6c757d;
+  display: flex;
+  align-items: center;
+}
+
+.chat-status::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: #28a745;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+/* Chat Messages */
+.chat-messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.message {
+  display: flex;
+  max-width: 80%;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.bot-message {
+  align-self: flex-start;
+}
+
+.message-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f0f2f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+  flex-shrink: 0;
+  font-size: 16px;
+}
+
+.message-content {
+  background: #f0f2f5;
+  padding: 12px 16px;
+  border-radius: 18px;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #1a1a1a;
+  position: relative;
+}
+
+.message-sender {
+  font-weight: 600;
+  font-size: 12px;
+  margin-bottom: 4px;
+  color: #4a6cf7;
+}
+
+.message-time {
+  font-size: 10px;
+  color: #6c757d;
+  text-align: right;
+  margin-top: 4px;
+}
+
+/* Typing Indicator */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  padding: 8px 20px;
+  font-size: 12px;
+  color: #6c757d;
+  background: #f8f9fa;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.typing-dots {
+  display: inline-flex;
+  align-items: flex-end;
+  height: 12px;
+  margin-left: 4px;
+}
+
+.typing-dots::after {
+  content: '...';
+  display: inline-block;
+  width: 0;
+  overflow: hidden;
+  vertical-align: bottom;
+  animation: typing 1.4s infinite;
+}
+
+@keyframes typing {
+  0% { width: 0; }
+  50% { width: 2em; }
+  100% { width: 0; }
+}
+
+/* Chat Input */
+.chat-input-container {
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  background: #fff;
+  padding: 16px 20px;
+}
+
+.chat-input-wrapper {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border-radius: 24px;
+  padding: 0 16px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.chat-input-wrapper:focus-within {
+  border-color: #4a6cf7;
+  box-shadow: 0 0 0 2px rgba(74, 108, 247, 0.2);
+}
+
+.chat-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 12px 0;
+  font-size: 14px;
+  outline: none;
+  color: #1a1a1a;
+}
+
+.chat-input::placeholder {
+  color: #adb5bd;
+}
+
+.send-button {
+  background: none;
+  border: none;
+  color: #4a6cf7;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  margin-left: 8px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.send-button:hover {
+  background: rgba(74, 108, 247, 0.1);
+}
+
+.send-button:active {
+  transform: scale(0.95);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 600px) {
+  .chat-container {
+    margin: 20px auto 0;
+    height: 70vh;
+  }
+  
+  .message {
+    max-width: 90%;
+  }
 }
 .gallery{
   display:flex;
@@ -119,15 +334,13 @@ footer{
 main h1{
   margin-top: 8px;
 }
-/* Fullscreen canvas behind everything */
-.bg-stars{
+/* Fullscreen particle container */
+#particles-js {
   position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  display: block;
-  z-index: 0;          /* keep it behind */
-  pointer-events: none;
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  z-index: -1;
 }
 
 /* Ensure content sits above */
