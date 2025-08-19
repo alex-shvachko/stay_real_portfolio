@@ -173,6 +173,7 @@
     const modalEl = document.getElementById('modal');
     const modalClose = modalEl.querySelector('.modal-close');
     const modalContent = modalEl.querySelector('.modal-content');
+    const modalBody = modalEl.querySelector('.modal-body');
     modalEl.style.display = 'none';
     const DPR = Math.min(devicePixelRatio || 1, 2);
 
@@ -337,8 +338,7 @@
   function openModal(projectTitle) {
     const project = projects[projectTitle];
     if (project) {
-      document.getElementById('modalTitle').textContent = project.title;
-      document.querySelector('.modal-body').innerHTML = project.content;
+      modalBody.innerHTML = `<h2 id="modalTitle" style="margin:0;font-size:20px;font-weight:800;letter-spacing:.2px;">${project.title}</h2>` + project.content;
       modalEl.style.display = 'block';
       modalEl.classList.add('visible');
       modalEl.setAttribute('aria-hidden', 'false');
