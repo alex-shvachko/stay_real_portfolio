@@ -92,12 +92,18 @@ document.addEventListener('DOMContentLoaded', function() {
     dot.setAttribute('r', '0.4');
     dot.setAttribute('fill', '#000000');
     dot.style.opacity = '0';
+    // Ensure scaling occurs around the circle's own center so it stays on the branch
+    dot.style.transformBox = 'fill-box';
+    dot.style.transformOrigin = 'center';
     svg.appendChild(dot);
 
     // Create chip group
     const chipGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     chipGroup.style.opacity = '0';
     chipGroup.style.transform = 'translateY(4px)';
+    // Prevent scale/translate animations from shifting the group away from the branch
+    chipGroup.style.transformBox = 'fill-box';
+    chipGroup.style.transformOrigin = 'center';
     
     // Create chip background
     const chipBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
