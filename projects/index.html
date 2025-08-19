@@ -172,6 +172,8 @@
     const phraseBottom = document.getElementById('phraseBottom');
     const modalEl = document.getElementById('modal');
     const modalClose = modalEl.querySelector('.modal-close');
+    const modalContent = modalEl.querySelector('.modal-content');
+    modalEl.style.display = 'none';
     const DPR = Math.min(devicePixelRatio || 1, 2);
 
     let W=0, H=0, last=performance.now();
@@ -337,11 +339,17 @@
     if (project) {
       document.getElementById('modalTitle').textContent = project.title;
       document.querySelector('.modal-body').innerHTML = project.content;
+      modalEl.style.display = 'block';
       modalEl.classList.add('visible');
       modalEl.setAttribute('aria-hidden', 'false');
+      modalContent.scrollTop = 0;
     }
   }
-  function closeModal(){ modalEl.classList.remove('visible'); modalEl.setAttribute('aria-hidden','true'); }
+  function closeModal(){
+    modalEl.classList.remove('visible');
+    modalEl.setAttribute('aria-hidden','true');
+    modalEl.style.display = 'none';
+  }
   modalClose.addEventListener('click', closeModal);
   modalEl.addEventListener('click', (e)=>{ if (e.target === modalEl) closeModal(); });
   addEventListener('keydown', (e)=>{ if (e.key === 'Escape') closeModal(); });
