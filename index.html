@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="assets/css/styles.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script defer src="assets/js/main.js"></script>
-  <script defer src="assets/js/chat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
   <script defer src="assets/js/particles-config.js"></script>
 </head>
@@ -63,52 +62,140 @@
     </div>
 
     <h1>Alex Shvachko</h1>
-    <p class="bio">I am a multidisciplinary creator exploring digital marketing and automation. Feel free to chat with me!</p>
-    
-    <div class="chat-container">
-      <div class="chat-header">
-        <div class="chat-avatar">🤖</div>
-        <div class="chat-title">AI Assistant</div>
-        <div class="chat-status">Online</div>
-      </div>
-      
-      <div id="chat-messages" class="chat-messages">
-        <div class="message bot-message">
-          <div class="message-avatar">🤖</div>
-          <div class="message-content">
-            <div class="message-sender">AI Assistant</div>
-            <div class="message-text">Hi there! I'm your AI assistant. How can I help you today?</div>
-            <div class="message-time">Just now</div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="chat-input-container">
-        <div class="typing-indicator" id="typing-indicator" style="display: none;">
-          <span>AI Assistant is typing</span>
-          <span class="typing-dots">...</span>
-        </div>
-        <div class="chat-input-wrapper">
-          <input 
-            type="text" 
-            id="user-input" 
-            class="chat-input" 
-            placeholder="Type your message..." 
-            autocomplete="off"
-          >
-          <button id="send-button" class="send-button">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
+    <p class="bio">I am a multidisciplinary creator exploring data engineering, AI, and automation.</p>
+
+    <!-- TechTree overlay (vanilla JS implementation of the provided component) -->
+    <div id="tech-tree" class="tech-tree" aria-hidden="true"></div>
+    <!-- Spacer to allow scroll progress for TechTree animation -->
+    <div class="scroll-spacer" aria-hidden="true"></div>
   </main>
 
   <footer>
     © <span id="year"></span> Alex Shvachko — Stay Real.
   </footer>
+  <style>
+    .tech-tree{ position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 2; }
+    .tech-tree svg{ position:absolute; inset:0; width:100%; height:100%; }
+    /* provides scroll distance so the TechTree can reveal */
+    .scroll-spacer{ height: 180vh; }
+  </style>
+  <script>
+    (function(){
+      const skills = [
+        { name: 'Python', side: 'left' },
+        { name: 'SQL · PostgreSQL', side: 'right' },
+        { name: 'Apache Spark', side: 'left' },
+        { name: 'Apache Kafka', side: 'right' },
+        { name: 'Apache Airflow', side: 'left' },
+        { name: 'Docker', side: 'right' },
+        { name: 'Kubernetes', side: 'left' },
+        { name: 'Snowflake', side: 'right' },
+        { name: 'dbt', side: 'left' },
+        { name: 'Terraform', side: 'right' },
+        { name: 'AWS · GCP', side: 'left' },
+        { name: 'Pandas · NumPy', side: 'right' },
+      ];
+
+      const container = document.getElementById('tech-tree');
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgNS, 'svg');
+      svg.setAttribute('viewBox','0 0 100 100');
+
+      // trunk
+      const trunk = document.createElementNS(svgNS, 'path');
+      trunk.setAttribute('d','M50 5 L50 85');
+      trunk.setAttribute('stroke','#000000');
+      trunk.setAttribute('stroke-width','0.6');
+      trunk.setAttribute('fill','none');
+      trunk.setAttribute('stroke-linecap','round');
+      trunk.style.strokeDasharray = 80;
+      trunk.style.strokeDashoffset = 80;
+      svg.appendChild(trunk);
+
+      // branches + chips
+      const items = [];
+      skills.forEach((skill, index) => {
+        const yPos = 15 + index * 5.5;
+        const isLeft = skill.side === 'left';
+        const branchEndX = isLeft ? 15 : 85;
+        const chipX = isLeft ? 2 : 76;
+
+        const g = document.createElementNS(svgNS, 'g');
+
+        const branch = document.createElementNS(svgNS, 'path');
+        branch.setAttribute('d', `M50 ${yPos} L${branchEndX} ${yPos}`);
+        branch.setAttribute('stroke','#000000');
+        branch.setAttribute('stroke-width','0.3');
+        branch.setAttribute('fill','none');
+        branch.setAttribute('stroke-linecap','round');
+        branch.style.strokeDasharray = 35;
+        branch.style.strokeDashoffset = 35;
+
+        const dot = document.createElementNS(svgNS, 'circle');
+        dot.setAttribute('cx','50');
+        dot.setAttribute('cy', String(yPos));
+        dot.setAttribute('r','0.4');
+        dot.setAttribute('fill','#000000');
+        dot.style.opacity = 0;
+
+        const chipGroup = document.createElementNS(svgNS, 'g');
+        chipGroup.style.opacity = 0;
+
+        const rect = document.createElementNS(svgNS, 'rect');
+        rect.setAttribute('x', String(chipX));
+        rect.setAttribute('y', String(yPos - 1.8));
+        rect.setAttribute('width','22');
+        rect.setAttribute('height','3.6');
+        rect.setAttribute('rx','1.8');
+        rect.setAttribute('fill','#000000');
+        rect.setAttribute('stroke','#000000');
+        rect.setAttribute('stroke-width','0.1');
+
+        const text = document.createElementNS(svgNS, 'text');
+        text.setAttribute('x', String(chipX + 11));
+        text.setAttribute('y', String(yPos + 0.4));
+        text.setAttribute('text-anchor','middle');
+        text.setAttribute('font-size','1.3');
+        text.setAttribute('fill','#ffffff');
+        text.setAttribute('font-family','system-ui, -apple-system, sans-serif');
+        text.setAttribute('font-weight','600');
+        text.textContent = skill.name;
+
+        chipGroup.appendChild(rect);
+        chipGroup.appendChild(text);
+
+        g.appendChild(branch);
+        g.appendChild(dot);
+        g.appendChild(chipGroup);
+        svg.appendChild(g);
+
+        items.push({ yPos, branch, dot, chipGroup, index });
+      });
+
+      container.appendChild(svg);
+
+      // scroll animation
+      function onScroll(){
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = docHeight > 0 ? Math.min(scrollTop / docHeight, 1) : 0;
+        const treeHeight = Math.min(progress * 90, 85);
+        trunk.style.strokeDashoffset = 80 - treeHeight;
+
+        items.forEach(({ yPos, branch, dot, chipGroup, index }) => {
+          const branchProgress = Math.max(0, (progress - (index * 0.05 + 0.2)) * 3);
+          const dash = Math.max(0, 35 - branchProgress * 35);
+          branch.style.strokeDashoffset = dash;
+          dot.style.opacity = Math.min(1, branchProgress);
+          const opacity = Math.max(0, branchProgress - 0.3);
+          chipGroup.style.opacity = opacity;
+          const translateY = Math.max(0, (1 - branchProgress) * 2);
+          chipGroup.style.transform = `translateY(${translateY}px)`;
+        });
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+  </script>
 </body>
 </html>
