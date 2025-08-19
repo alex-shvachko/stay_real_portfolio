@@ -35,12 +35,13 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Calculate dynamic dimensions based on skill count
   const startY = 15; // Starting Y position for first branch
-  const branchSpacing = 12; // Space between branch levels
-  const trunkBottom = startY + branchSpacing * (skills.length - 1) + 10; // End of trunk
+  const branchSpacing = 9; // Space between branch levels
+  const extraSpace = 2; // Minimal space below the tree
+  const trunkBottom = startY + branchSpacing * (skills.length - 1) + extraSpace; // End of trunk
   const trunkLength = trunkBottom - 5;
-  const viewBoxHeight = trunkBottom + 5; // Extra padding at bottom
+  const viewBoxHeight = trunkBottom + extraSpace; // Extra padding at bottom
 
-  // Set a height that matches the tree
+  // Set a height that matches the tree without large gaps afterwards
   container.style.height = `${viewBoxHeight}vh`;
 
   // Create SVG element with dynamic viewBox
