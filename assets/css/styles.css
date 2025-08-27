@@ -45,6 +45,25 @@ main{
   max-width:600px;
   margin:20px auto;
 }
+.contact-list{
+  list-style:none;
+  padding:0;
+  margin:40px auto 0;
+  max-width:360px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  text-align:left;
+}
+
+.contact-list a{
+  color:#4a6cf7;
+  text-decoration:none;
+}
+
+.contact-list a:hover{
+  text-decoration:underline;
+}
 /* Chat Container */
 .chat-container {
   width: 100%;
