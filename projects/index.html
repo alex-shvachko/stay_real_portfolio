@@ -30,6 +30,17 @@
       padding:8px 12px; border-radius:12px; font-size:12px; letter-spacing:.2px; z-index:100;
       transition: opacity 0.3s ease;}
 
+    .cube-quote{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      color:#111;
+      font-size:16px;
+      z-index:5;
+      text-align:center;
+      transition:opacity 0.3s ease;
+    }
+
     .skill-button {
       position: fixed;
       transform: translate(-50%, -50%);
@@ -133,6 +144,7 @@
   <div id="particles-js"></div>
   <canvas id="stage" aria-label="Interactive cube particle field"></canvas>
   <div class="hint" id="hint">Move your cursor to the center to transform the cube • Tap center on mobile</div>
+  <div id="quote" class="cube-quote">"Curiosity has its own reason for existing." — Albert Einstein</div>
 
   <!-- phrase containers (filled by JS) -->
   <div id="phraseTop" class="phrase-line" aria-hidden="true"></div>
@@ -165,12 +177,13 @@
 
   <script>
   (function(){
-    const cvs = document.getElementById('stage');
-    const ctx = cvs.getContext('2d');
-    const hint = document.getElementById('hint');
-    const phraseTop = document.getElementById('phraseTop');
-    const phraseBottom = document.getElementById('phraseBottom');
-    const modalEl = document.getElementById('modal');
+  const cvs = document.getElementById('stage');
+  const ctx = cvs.getContext('2d');
+  const hint = document.getElementById('hint');
+  const phraseTop = document.getElementById('phraseTop');
+  const phraseBottom = document.getElementById('phraseBottom');
+  const quote = document.getElementById('quote');
+  const modalEl = document.getElementById('modal');
     const modalClose = modalEl.querySelector('.modal-close');
     const modalContent = modalEl.querySelector('.modal-content');
     const modalBody = modalEl.querySelector('.modal-body');
@@ -371,7 +384,7 @@
     const offsetTop    = Math.max(140, SIZE * 0.32) / DPR;
     const offsetBottom = Math.max(160, SIZE * 0.36) / DPR;
 
-    let topY = (CY - SIZE/2) / DPR - offsetTop;
+    let topY = (CY - SIZE/2) / DPR - offsetTop - 50;
     let bottomY = (CY + SIZE/2) / DPR + offsetBottom;
 
     // Safety to keep on screen
@@ -381,6 +394,16 @@
     phraseTop.style.top = `${topY}px`;
     phraseBottom.style.top = `${bottomY}px`;
     phraseTop.style.left = phraseBottom.style.left = `${cxCSS}px`;
+  }
+
+  function positionQuote(){
+    if(!quote) return;
+    const cxCSS = CX / DPR;
+    const offsetQuote = Math.max(140, SIZE * 0.32) / DPR;
+    let quoteY = (CY - SIZE/2) / DPR - offsetQuote;
+    quoteY = Math.max(12, quoteY);
+    quote.style.top = `${quoteY}px`;
+    quote.style.left = `${cxCSS}px`;
   }
   function showPhrase(){
     phraseTop.classList.add('visible');
@@ -396,6 +419,10 @@
     if (phase !== 'idle') return;
     phase = 'phrase';
     hint.style.opacity = '0';
+    if(quote){
+      quote.style.opacity = '0';
+      setTimeout(() => { quote.style.display = 'none'; }, 300);
+    }
     buildPhrase();
     positionPhrase();
     showPhrase();
@@ -470,6 +497,7 @@
 
     createButtons();
     positionPhrase();
+    positionQuote();
 
     if (phase === 'idle') {
       particles.length = 0;
