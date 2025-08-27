@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     { name: "Advanced SQL & Data Modeling", side: "right" },
     { name: "Agentic Workflows", side: "left" },
     { name: "ETL & Data Warehousing", side: "right" },
-    { name: "Generative Media & Prompt Engineering", side: "left" },
+    { name: "Advanced Prompt Engineering", side: "left" },
     { name: "Big Data Processing", side: "right" },
     { name: "Time-Series & Longitudinal Data", side: "left" },
     { name: "Backend & APIs", side: "right" },
