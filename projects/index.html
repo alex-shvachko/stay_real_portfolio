@@ -30,6 +30,18 @@
       padding:8px 12px; border-radius:12px; font-size:12px; letter-spacing:.2px; z-index:100;
       transition: opacity 0.3s ease;}
 
+    .cube-quote{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      font-size:18px;
+      color:#333;
+      z-index:5;
+      pointer-events:none;
+      transition:opacity .35s ease;
+    }
+    .cube-quote.hidden{ opacity:0; }
+
     .skill-button {
       position: fixed;
       transform: translate(-50%, -50%);
@@ -132,6 +144,7 @@
 <body>
   <div id="particles-js"></div>
   <canvas id="stage" aria-label="Interactive cube particle field"></canvas>
+  <div id="cubeQuote" class="cube-quote">"Curiosity has its own reason for existing." - Albert Einstein</div>
   <div class="hint" id="hint">Move your cursor to the center to transform the cube • Tap center on mobile</div>
 
   <!-- phrase containers (filled by JS) -->
@@ -170,6 +183,7 @@
     const hint = document.getElementById('hint');
     const phraseTop = document.getElementById('phraseTop');
     const phraseBottom = document.getElementById('phraseBottom');
+    const cubeQuote = document.getElementById('cubeQuote');
     const modalEl = document.getElementById('modal');
     const modalClose = modalEl.querySelector('.modal-close');
     const modalContent = modalEl.querySelector('.modal-content');
@@ -368,7 +382,7 @@
     const cxCSS = CX / DPR;
 
     // Farther from cube edges (scaled + mins)
-    const offsetTop    = Math.max(140, SIZE * 0.32) / DPR;
+    const offsetTop    = (Math.max(140, SIZE * 0.32) + 50) / DPR;
     const offsetBottom = Math.max(160, SIZE * 0.36) / DPR;
 
     let topY = (CY - SIZE/2) / DPR - offsetTop;
@@ -377,6 +391,8 @@
     // Safety to keep on screen
     topY = Math.max(12, topY);
     bottomY = Math.min((H / DPR) - 24, bottomY);
+
+    cubeQuote.style.top = (topY + 50) + 'px';
 
     phraseTop.style.top = `${topY}px`;
     phraseBottom.style.top = `${bottomY}px`;
@@ -497,6 +513,7 @@
   function triggerTransform(){
     if (transformTriggered) return;
     transformTriggered = true;
+    cubeQuote.classList.add('hidden');
 
     // show buttons
     buttons.forEach((btn, i) => {
