@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Coming Soon — Stay Real</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../assets/css/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script defer src="../../assets/js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script defer src="../../assets/js/particles-config.js"></script>
+  <style>
+    main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 120px);
+      text-align: center;
+      position: relative;
+      z-index: 10;
+    }
+    .coming-text {
+      font-weight: 800;
+      font-size: clamp(1.75rem, 4vw, 3rem);
+      color: #111;
+      background: rgba(255,255,255,0.6);
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body>
+  <div id="particles-js"></div>
+  <header>
+    <nav class="nav" style="display: flex; justify-content: center; width: 100%;">
+      <div class="links" style="justify-content: center;">
+        <a class="pill" href="../../">Home</a>
+        <a class="pill" href="../../projects/">Projects</a>
+        <a class="pill" href="../">Services</a>
+        <a class="pill" href="../../contact/">Contact Info</a>
+      </div>
+    </nav>
+  </header>
+  <main>
+    <div class="coming-text">Website Coming soon...</div>
+  </main>
+  <footer>
+    Ac <span id="year"></span> Alex Shvachko — Stay Real.
+  </footer>
+</body>
+</html>
+
