@@ -204,6 +204,9 @@
     'Data Science': {
       title: 'Ambulances at the Door: Predicting ER Off-Load Delays (Israel, 2022)',
       content: `
+        <div style="text-align: center; margin-bottom: 1rem;">
+          <img src="../assets/img/er.png" alt="ER Off-Load Delay Analysis" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        </div>
         <h2>Backstory</h2>
         <p>Ambulances were arriving to ERs and waiting on stretchers because no bed was immediately available. That delay cascades: worse patient experience, staff overload, and lower system throughput. I set out to measure the problem end-to-end and predict delays so dispatchers and ERs can act before bottlenecks form.</p>
         
@@ -259,14 +262,21 @@
           <li>A/B test: dynamic routing versus status-quo during peak windows.</li>
         </ul>
         
-        <div style="text-align: center; margin-top: 2rem;">
-          <img src="../assets/img/er.png" alt="ER Off-Load Delay Analysis" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-        </div>
       `
     },
     'Machine Learning': {
       title: 'Wafer Scratch Detection — Semiconductor Yield Optimization',
       content: `
+        <div style="display:flex; gap:12px; align-items:center; justify-content:center; margin: 4px 0 16px;">
+          <figure style="flex:1; margin:0;">
+            <img src="../assets/img/wafer_map_input.png" alt="Wafer map input" style="width:100%; height:auto; border-radius:10px; box-shadow: 0 4px 12px rgba(0,0,0,0.25); background:#111;" />
+            <figcaption style="font-size:12px; opacity:.8; margin-top:6px; text-align:center;">Input wafer map</figcaption>
+          </figure>
+          <figure style="flex:1; margin:0;">
+            <img src="../assets/img/wafer_map_target.png" alt="Wafer map target (scratch)" style="width:100%; height:auto; border-radius:10px; box-shadow: 0 4px 12px rgba(0,0,0,0.25); background:#111;" />
+            <figcaption style="font-size:12px; opacity:.8; margin-top:6px; text-align:center;">Target (scratch) label</figcaption>
+          </figure>
+        </div>
         <h2>Backstory</h2>
         <p>Semiconductor fabrication produces thousands of dies per wafer, where even minor defects can cascade into massive production losses. Among these, scratch patterns are particularly challenging to detect: they often appear as subtle, elongated streaks hidden within dense arrays of mostly functional dies. Manual inspection is slow and inconsistent, making automation essential.</p>
 
@@ -278,6 +288,11 @@
           <li>Training a highly imbalanced binary classifier, optimized to maximize recall on scratch wafers while keeping false alarms manageable.</li>
           <li>Applying explainability tools (SHAP values) to identify the features that drove detection (e.g., density of local bad dies, corridor ratios, radial alignment).</li>
         </ul>
+
+        <div style="text-align:center; margin: 16px 0;">
+          <img src="../assets/img/my_results.png" alt="Model results visualization" style="max-width:100%; height:auto; border-radius:10px; box-shadow: 0 4px 12px rgba(0,0,0,0.25);" />
+          <div style="font-size:12px; opacity:.8; margin-top:6px;">My model results on evaluation wafers</div>
+        </div>
 
         <h2>Results</h2>
         <ul>
@@ -309,6 +324,11 @@
           <li>Integration with optical image data for multimodal detection.</li>
           <li>Adaptive thresholds tuned to fab-specific defect distributions.</li>
         </ul>
+
+        <div style="text-align:center; margin-top: 16px;">
+          <img src="../assets/img/metrics_scratch_Detection.png" alt="Scratch detection metrics" style="max-width:100%; height:auto; border-radius:10px; box-shadow: 0 4px 12px rgba(0,0,0,0.25);" />
+          <div style="font-size:12px; opacity:.8; margin-top:6px;">Metrics: Scratch Detection</div>
+        </div>
       `
     },
     'Data Engineering': { title: 'Data Engineering Project', content: 'Coming soon...' },
@@ -328,15 +348,21 @@
         <p>This setup acts as a self-updating growth engine: it researches, creates, publishes, engages, and learns—all without manual intervention, while still leaving room for human creativity and strategy.</p>
       `
     },
-    'AI Engineering': { title: 'AI Engineering Project', content: 'Coming soon...' },
+    'DB Managment': { title: 'Databases and Big Data', content: 'Coming soon...' },
     'AI Art': {
       title: 'Generative Media & Visual Systems',
       content: `
+        <img src="../assets/img/div1.png" alt="AI Art example 1" style="width:100%; border-radius:12px; margin: 8px 0 16px;" />
+
         <p>I design reproducible pipelines for image and video generation using state-of-the-art multimodal models. My work focuses on creating minimal, high-fashion visuals with crisp white backgrounds, sharp lighting, and consistent wardrobe direction. Through structured prompt engineering and automation, I build systems that can generate cohesive series of portraits, cinematic motion clips, and thematic collections with precision and style.</p>
+
+        <img src="../assets/img/div2.png" alt="AI Art example 2" style="width:100%; border-radius:12px; margin: 16px 0;" />
 
         <p>To ensure reliability and scalability, I develop batch pipelines with n8n for automated prompt execution, seed tracking, and reproducible reruns. Each project is guided by a style framework that defines composition, lighting language, and accessory constraints, enabling consistency across different generative platforms. My practice also includes curating outputs, building theme libraries, and aligning results to brand-level aesthetics.</p>
 
         <p>This approach combines creativity with engineering discipline: every image or clip is not just a one-off generation, but part of a controlled, repeatable workflow. The outcome is a body of work that demonstrates both artistic direction and technical mastery in generative AI.</p>
+
+        <img src="../assets/img/div3.png" alt="AI Art example 3" style="width:100%; border-radius:12px; margin: 16px 0 8px;" />
       `
     }
   };

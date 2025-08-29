@@ -1,17 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
   const skills = [
-    { name: "LLM-Powered Automation", side: "left" },
-    { name: "Advanced SQL & Data Modeling", side: "right" },
-    { name: "Agentic Workflows", side: "left" },
+    { name: "AI Art", side: "left" },
+    { name: "Advanced SQL & Data Engeneering", side: "right" },
+    { name: "LLM, Agentic, RAG", side: "left" },
     { name: "ETL & Data Warehousing", side: "right" },
     { name: "Advanced Prompt Engineering", side: "left" },
-    { name: "Big Data Processing", side: "right" },
-    { name: "Time-Series & Longitudinal Data", side: "left" },
-    { name: "Backend & APIs", side: "right" },
-    { name: "Vector Search & Text Embeddings", side: "left" },
-    { name: "Cloud & DevOps", side: "right" },
-    { name: "Cost-Aware Data Platform Design", side: "left" },
-    { name: "Dashboards & Analytics", side: "right" },
+    { name: "Big Data, Hadoop, Spark", side: "right" },
+    { name: "Time Series & Survival Analysis", side: "left" },
+    { name: "Backend & APIs, No-SQL", side: "right" },
+    { name: "Information Retrieval", side: "left" },
+    { name: "Git & DevOps", side: "right" },
+    { name: "Statistics & Machine Learning", side: "left" },
+    { name: "Dashboards & Buisness Analytics", side: "right" },
   ];
 
   // Get the bio element and its parent
